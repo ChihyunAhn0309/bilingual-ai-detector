@@ -107,7 +107,7 @@ def main(argv=None):
         validate_english_input(original, args.language)
         with tempfile.TemporaryDirectory(prefix='bilingual-ai-worker-') as temporary:
             result_path = Path(temporary) / 'result.json'
-            command = [sys.executable, '-B', '-X', 'utf8', str(Path(__file__).with_name('local_model.py')),
+            command = [sys.executable, '-B', '-X', 'utf8', '-X', 'faulthandler', str(Path(__file__).with_name('local_model.py')),
                        str(Path(args.input).resolve()), '--language', args.language,
                        '--model-dir', str(Path(args.model_dir).resolve()),
                        '--max-occlusions', str(args.max_occlusions), '--out', str(result_path)]

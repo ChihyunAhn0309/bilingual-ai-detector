@@ -9,7 +9,7 @@ Korean uses the separate [bundled Korean model](korean-model.md). This guide cov
 Pinned revision: `f1795c86806e6838d4afa33d0b1427f8430c9615`.
 Weight SHA256: `4a1561fadf44ec72934edd6158ff8c76e9388ade1384dbeeea6eb15f93251087`.
 
-No API key, inference server, or paid account is needed. Requirements are Python 3.10+, torch, transformers, safetensors, and tokenizers. Development used packages already installed under Python 3.13. The scripts do not install packages automatically or fall back to cloud execution. If memory is insufficient, mark model scoring unavailable and continue the evidence review.
+No API key, inference server, or paid account is needed. Requirements are Python 3.10+, torch, transformers, safetensors, and tokenizers. Windows requires safetensors 0.8+ for its non-mmap loader. Development used packages already installed under Python 3.13. The scripts do not install packages automatically or fall back to cloud execution. If memory is insufficient, mark model scoring unavailable and continue the evidence review.
 
 ```text
 python scripts/prepare_local_model.py models/tropa-mini
@@ -24,9 +24,11 @@ The recommended `run_english.py` entry point launches `local_model.py` as a loca
 
 The lower-level `local_model.py` CLI also uses the lock, but `run_english.py` provides abnormal-exit detection and final-result validation. Direct `LocalDetector` library calls do not receive this execution protection.
 
-Independent Windows review observed intermittent native access violations in PyTorch's `torch_cpu.dll`. A sequential retry and the 36-document pilot succeeded, but the root cause remains unestablished. The supervisor validates the exit code, model/input metadata, finite probabilities and their sum, coordinates and token coverage of all windows, and consistency of paragraph-removal measurements. On failure, it writes no final result and returns an error with `authorship_probabilities: null`. It neither overwrites nor reuses an older result.
+Independent Windows review observed intermittent native access violations in PyTorch's `torch_cpu.dll`. A later sequential reproduction traced the failure to `safetensors.torch.load_file` and `torch.storage.UntypedStorage.__getitem__` during memory-mapped weight loading, before inference. Version 3.1.2 selects the official `pread` backend on Windows, bypassing that path. Older Windows loaders receive an explicit dependency error rather than a retry through mmap. Other operating systems keep the existing mmap backend.
 
-This improves failure handling; it does not fix the underlying native crash or guarantee stability in every environment. The [tested environment](tested-environment.json) records actual package versions. Not every combination allowed by the requirements files has been tested.
+This is a verified application workaround for the reproduced loading failure, not an upstream library repair or a guarantee of stability in every environment. Low available memory was observed, but its causal role was not established. `pread` allocates tensor storage in process memory, so adequate RAM/pagefile capacity remains necessary. See the [official loading API](https://huggingface.co/docs/safetensors/en/api/torch), [related upstream report](https://github.com/safetensors/safetensors/issues/693), and [release verification](verification.md). The [tested environment](tested-environment.json) records actual package versions; not every allowed combination has been tested.
+
+The supervisor enables Python's fault handler in the worker and validates the exit code, model/input metadata, finite probabilities and their sum, coordinates and token coverage of all windows, and consistency of paragraph-removal measurements. On failure, it writes no final result and returns an error with `authorship_probabilities: null`. It neither overwrites nor reuses an older result. Successful results add `weight_loading_backend` (`pread` on Windows, `mmap` elsewhere); the schema version, four classes, original model hashes, coverage fields, and `execution_guard` remain intact.
 
 Verify that input is actually English. Blank or numeric-only text, Hangul, and predominantly non-Latin text are rejected before inference. The script screen does not distinguish English from French, German, or other Latin-script languages.
 

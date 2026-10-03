@@ -16,6 +16,20 @@ LABELS = ["human", "ai", "ai_edited", "humanized"]
 DEFAULT_MODEL = Path(__file__).resolve().parents[1] / "models" / "tropa-mini"
 
 
+def load_checkpoint(path, loader, platform_name=None):
+    """Avoid the observed Windows mmap storage-slicing access violation."""
+    windows_host = (os.name if platform_name is None else platform_name) == "nt"
+    kwargs = {"device": "cpu"}
+    if windows_host:
+        kwargs["backend"] = "pread"
+    try:
+        return loader(str(path), **kwargs)
+    except TypeError as exc:
+        if windows_host and "backend" in str(exc):
+            raise ValueError("Windows English inference requires safetensors>=0.8 with the pread backend. Update the optional English dependencies; mmap fallback is disabled.") from exc
+        raise
+
+
 def validate_english_input(text, language="en"):
     if not text.strip():
         raise ValueError("Empty text")
@@ -89,7 +103,9 @@ class LocalDetector:
         # Build shapes without allocating a second 1.7 GB copy of the weights.
         with torch.device("meta"):
             self.model = Network()
-        self.model.load_state_dict(load_file(str(directory / "model.safetensors")), strict=True, assign=True)
+        self.weight_loading_backend = "pread" if os.name == "nt" else "mmap"
+        print(f"Loading verified weights with {self.weight_loading_backend}", file=sys.stderr, flush=True)
+        self.model.load_state_dict(load_checkpoint(directory / "model.safetensors", load_file), strict=True, assign=True)
         self.model.eval()
         print("Offline model ready", file=sys.stderr, flush=True)
 
@@ -132,6 +148,7 @@ class LocalDetector:
                   "measured_at_utc": utc_now(),
                   "language_check": language_check,
                   "revision": REVISION, "weight_sha256": WEIGHT_SHA256,
+                  "weight_loading_backend": self.weight_loading_backend,
                   "language_scope": "English only; independently uncalibrated",
                   "text_sha256": text_hash(text), "token_count": len(ids), "windows": scored,
                   "all_input_tokens_scored": True, "document_class_probabilities": document_probs,

@@ -6,7 +6,7 @@ The Korean classifier is bundled and runs with the Python standard library. An o
 
 **This tool does not certify authorship or guarantee perfect detection.** Its percentages are model estimates under documented conditions, not verified probabilities of a person's writing history.
 
-Current version: **3.1.1**, the English documentation edition of the independently reviewed 3.1.0 implementation. Classifier code, weights, and evaluation data are unchanged. See the [independent review](references/review-public.md), [reviewed file hashes](references/reviewed-files-public.json), and [verification history](references/verification.md).
+Current version: **3.1.2**, with a Windows weight-loading fix and English documentation. Weights, scoring mathematics, and evaluation data are unchanged. See the [original independent review](references/review-public.md), [historical reviewed file hashes](references/reviewed-files-public.json), and [verification history](references/verification.md) for the scope of each release's checks.
 
 ## Capabilities
 
@@ -54,7 +54,7 @@ python -B -X utf8 scripts/run_english.py examples/english.txt --language en --ex
 
 Setup downloads Python packages and a public model. **It does not upload the manuscript.** Inference uses local files only. The English model requires substantial memory and is an experimental auxiliary scorer.
 
-The supervised CLI serializes model workers and produces no probability result after a runtime failure. An intermittent Windows/PyTorch native crash was observed during review; the guard does not establish or fix its underlying cause. See the [English model guide](references/free-local-model.md) for the checkpoint, hashes, runtime protection, and limitations.
+The supervised CLI serializes model workers and produces no probability result after a runtime failure. Windows uses Safetensors 0.8+'s `pread` backend to bypass the reproduced access violation in memory-mapped weight loading. It does not fall back to that crashing path. Memory requirements still apply, and native-runtime stability is not guaranteed. See the [English model guide](references/free-local-model.md) for the checkpoint, hashes, runtime protection, and limitations.
 
 ## Measured performance and limits
 
@@ -82,7 +82,7 @@ Short texts, translation, editing, mixed authorship, new humanizers, and unfamil
 python -B -X utf8 -m unittest discover -s scripts -p "test_*.py"
 ```
 
-The 56 unit tests use the standard library and do not download the large English model or call commercial APIs. They cover model hashes, metric recomputation, data splits, Unicode source coordinates, invalid inputs, HTML escaping, and guarded execution.
+The 60 unit tests use the standard library and do not download the large English model or call commercial APIs. They cover model hashes, metric recomputation, data splits, Unicode source coordinates, invalid inputs, HTML escaping, guarded execution, and Windows loader selection and failure handling.
 
 The separate review also passed 16 subprocess checks and 20 result-schema checks, ran the real English checkpoint, rescored all 2,598 Korean evaluation documents, and reproduced Korean training. Test counts are not detector-accuracy measurements. See the [verification history](references/verification.md).
 

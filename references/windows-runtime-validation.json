@@ -1,0 +1,105 @@
+{
+  "version": "3.1.2",
+  "date": "2026-10-03",
+  "platform": "Windows; Python 3.13.9",
+  "baseline_commit": "996e0fc4267fa2d79d9fbc4931b12d297d792e79",
+  "reproduced_failure": {
+    "backend": "mmap",
+    "worker_exit_code": 3221225477,
+    "stage": "safetensors.torch.load_file -> torch.storage.UntypedStorage.__getitem__",
+    "during_inference": false,
+    "concurrent_english_inference": false,
+    "memory_pressure_observed": true,
+    "memory_pressure_proven_causal": false
+  },
+  "repair": {
+    "windows_backend": "pread",
+    "minimum_windows_safetensors": "0.8",
+    "automatic_mmap_retry": false,
+    "other_platform_backend": "unchanged mmap",
+    "worker_faulthandler": true,
+    "schema_change": "Additive weight_loading_backend field; schema_version remains 2"
+  },
+  "unit_tests_passed": 60,
+  "independent_agent_review": {
+    "actionable_defects": 0,
+    "runner_tests_passed": 12,
+    "coverage_regressions_passed": 1,
+    "ran_inference": false,
+    "scope": "Read-only code and unit-test review; actual inference was verified by the repair agent."
+  },
+  "actual_installed_supervised_runs": [
+    {
+      "name": "en-original",
+      "input_sha256": "a15af3a012825dd0ff18c1fc9eb67e58e0e4a53a9f05963c186f053bc295d184",
+      "exit_code": 0,
+      "elapsed_seconds": 46.386716799926944,
+      "original_unchanged": true,
+      "result_created": true,
+      "four_class_probabilities": {
+        "human": 0.0008303148206323385,
+        "ai": 0.9964320659637451,
+        "ai_edited": 0.00011130853090435266,
+        "humanized": 0.002626342698931694
+      },
+      "token_count": 153,
+      "windows": 1,
+      "weight_loading_backend": "pread",
+      "occlusion_records": 4,
+      "schema_validation": "passed",
+      "max_probability_difference": 0.0
+    },
+    {
+      "name": "en-revision-1",
+      "input_sha256": "728fe7cabb22fea96dadb4678e7e6b52b361299b9c5f65f5a2f9c96aea05abff",
+      "exit_code": 0,
+      "elapsed_seconds": 54.660754100070335,
+      "original_unchanged": true,
+      "result_created": true,
+      "four_class_probabilities": {
+        "human": 0.003234913805499673,
+        "ai": 0.9887335300445557,
+        "ai_edited": 0.00045135756954550743,
+        "humanized": 0.007580155972391367
+      },
+      "token_count": 153,
+      "windows": 1,
+      "weight_loading_backend": "pread",
+      "occlusion_records": 4,
+      "schema_validation": "passed"
+    },
+    {
+      "name": "historical-fixture",
+      "input_sha256": "2685ec46d2625fb44af237cecd974a567aaf507f8c935d8f6c936ddb89557ff3",
+      "exit_code": 0,
+      "elapsed_seconds": null,
+      "original_unchanged": true,
+      "result_created": true,
+      "four_class_probabilities": {
+        "human": 0.016339203342795372,
+        "ai": 0.9748795032501221,
+        "ai_edited": 6.716965435771272e-05,
+        "humanized": 0.008714154362678528
+      },
+      "token_count": 122,
+      "windows": 1,
+      "weight_loading_backend": "pread",
+      "occlusion_records": 3,
+      "schema_validation": "passed",
+      "max_probability_difference": 0.0,
+      "max_occlusion_delta_difference": 0.0,
+      "timing_note": "The successful inference result was created before a post-run harness baseline-path error. The corrected comparison was run without repeating model inference; elapsed time was not retained."
+    }
+  ],
+  "additional_direct_worker_original_run": "Passed before the supervised runs; identical original scores",
+  "english_weight_sha256": "4a1561fadf44ec72934edd6158ff8c76e9388ade1384dbeeea6eb15f93251087",
+  "commercial_api_calls": 0,
+  "paid_services_used": false,
+  "packages_installed_or_upgraded": false,
+  "scope": "Application workaround for the reproduced Windows loading failure, not an upstream library repair, universal stability guarantee, or detector-accuracy improvement.",
+  "references": [
+    "https://huggingface.co/docs/safetensors/en/api/torch",
+    "https://github.com/safetensors/safetensors/issues/693",
+    "https://raw.githubusercontent.com/huggingface/safetensors/v0.8.0/bindings/python/src/lib.rs"
+  ]
+}

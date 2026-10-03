@@ -2,7 +2,7 @@
 name: bilingual-ai-detector
 description: "Analyze Korean and English prose for possible AI authorship using free offline models, estimated Human/AI percentages, exact passage evidence, and counterexplanations. Use for AI detection, human-authorship estimates, humanized-text assessment, and detector comparison. Includes a calibrated Korean classifier and whole-document review. Not for rewriting or certifying authorship."
 metadata:
-  version: "3.1.1"
+  version: "3.1.2"
   researched: "2026-10-03"
 ---
 
@@ -35,7 +35,7 @@ Public model/research downloads are permitted; downloads receive no manuscript. 
 
 All paths in examples are relative to the skill directory. Resolve input/output paths explicitly and keep manuscripts unchanged. On Windows use `py -3.13 -B -X utf8` in place of `python` when needed.
 
-For English CLI inference use `scripts/run_english.py`, the supervised entry point. It serializes its workers and converts a worker crash or missing output into an explicit error with null authorship probabilities. Verify exit status, a newly produced result and its input hash; never reuse an older result after failure. The independent Windows review observed intermittent PyTorch native crashes; this guard does not establish or fix their underlying cause. Direct `LocalDetector` library calls do not have the CLI guard. The English script's Latin-character screen is not language identification: verify that the prose is English before scoring it.
+For English CLI inference use `scripts/run_english.py`, the supervised entry point. It serializes its workers and converts a worker crash or missing output into an explicit error with null authorship probabilities. Verify exit status, a newly produced result and its input hash; never reuse an older result after failure. Windows uses Safetensors' `pread` loader (requires version 0.8+) to bypass the reproduced native crash in the default memory-mapped loader; no automatic mmap retry is allowed. This workaround is not a general native-runtime stability guarantee. Direct `LocalDetector` library calls do not have the CLI guard. The English script's Latin-character screen is not language identification: verify that the prose is English before scoring it.
 
 ## Review the whole document
 

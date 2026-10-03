@@ -89,7 +89,7 @@ A separate Codex conversation read and executed the sources, weights, and origin
 - All 2,598 Korean evaluation/transfer documents were rescored within 1.45e-15 of saved predictions. All retained 12,844 hashes/labels and primary-split nonoverlap were checked. Repeated training produced byte-identical weights, splits, and predictions.
 - Inference network blocking was verified. No commercial detector API, paid inference, or cloud GPU was used. Raw training text, private audit logs, and the large optional English weights are excluded from the package.
 
-The Windows/PyTorch native-crash root cause remains unknown. Verified runtime protection is not a root-cause repair or a guarantee of stability everywhere. Data/model rights and the public repository's non-OSS scope are distinguished in the [third-party notices](../THIRD_PARTY_NOTICES.md). At the original 3.1 release, only the README and this verification index changed after the reviewed snapshot; executable code and weights retained their reviewed hashes.
+At the v3.1 review, the Windows/PyTorch native-crash root cause remained unknown. Verified runtime protection was not a root-cause repair or a guarantee of stability everywhere; the later v3.1.2 investigation below isolated a failing load path. Data/model rights and the public repository's non-OSS scope are distinguished in the [third-party notices](../THIRD_PARTY_NOTICES.md). At the original 3.1 release, only the README and this verification index changed after the reviewed snapshot; executable code and weights retained their reviewed hashes.
 
 ## v3.1.1 English documentation edition
 
@@ -98,3 +98,19 @@ README, supporting guides, model cards, comparisons, skill metadata, and the pub
 The original independent review is preserved in [commit 54b50bb](https://github.com/ChihyunAhn0309/bilingual-ai-detector/tree/54b50bb4c5c08f570c61b9b504b86bc7bc2ad609). `reviewed-files-public.json` still describes that historical snapshot. The English review translation and updated artifact hashes do not imply that the independent session was rerun. Findings, statuses, benchmark values, and unresolved limitations are unchanged.
 
 Documentation-update checks cover internal links, preserved source URLs, remaining Korean text limited to intentional examples/localization data, unchanged runtime/model/evaluation files, translated-review numeric parity, and the existing 56-test suite. No new detector-accuracy claim is introduced.
+
+## v3.1.2 Windows checkpoint-loading repair
+
+Sequential English inference failed again after v3.1.1. Stage logging and Python's fault handler reproduced exit `3221225477` (`0xC0000005`) inside `safetensors.torch.load_file` and `torch.storage.UntypedStorage.__getitem__`. Configuration, tokenizer creation, and meta initialization had passed; the crash occurred while loading weights, before model inference. Low available physical memory was recorded, but it was not established as the cause.
+
+Windows now loads the same pinned checkpoint with Safetensors 0.8+'s official `pread` backend. This bypasses the observed memory-mapped storage path without replacing, quantizing, or retraining the model. Older Windows dependencies fail clearly without retrying mmap. Other operating systems retain their existing loader. The supervised worker also enables `faulthandler` for future native failures.
+
+Validation records are in [windows-runtime-validation.json](windows-runtime-validation.json):
+
+- 60 standard-library unit tests passed. A separate agent found no actionable defect in the scoped change and independently passed 12 runner tests plus a token-coverage regression test without importing the large model.
+- The previously failing original succeeded once through the direct worker and again through the installed supervisor with identical class scores. The supplied revision also succeeded through the installed supervisor. Both retained all 153 input tokens, four classes, and four paragraph-removal records.
+- The historical three-paragraph review fixture was rerun through the installed supervisor to check score and explanation parity against its saved result. Exact measured differences are recorded in the linked validation file.
+- Every run used a fresh result path. Original documents and earlier failed-run records were preserved. Successful results retain schema version 2, the model/revision/weight hashes, coverage fields, and execution guard; `weight_loading_backend` is an additive metadata field.
+- No commercial API, cloud GPU, package installation, or paid service was used. Korean inference code, all model weights, and saved accuracy evaluations remain unchanged.
+
+This is an application workaround verified on these runs, not an upstream library fix or universal stability guarantee. It adds no new detector-accuracy evidence. The original independent review artifacts still describe their historical snapshot and have not been relabeled as a review of v3.1.2.

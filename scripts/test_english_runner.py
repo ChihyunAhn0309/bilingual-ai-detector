@@ -11,9 +11,38 @@ from unittest.mock import patch
 from detector import text_hash
 import run_english
 from runtime_guard import runtime_lock
+from local_model import load_checkpoint
 
 
 class EnglishRunnerTests(unittest.TestCase):
+    def test_windows_checkpoint_uses_non_mmap_backend(self):
+        def loader(path, *, device, backend):
+            self.assertEqual((path, device, backend), ('model.safetensors', 'cpu', 'pread'))
+            return {'weights': 'loaded'}
+        self.assertEqual(load_checkpoint('model.safetensors', loader, 'nt'), {'weights': 'loaded'})
+
+    def test_old_windows_loader_fails_without_mmap_retry(self):
+        def old_loader(path, device):
+            self.fail('An old mmap-only loader must not be called')
+        with self.assertRaisesRegex(ValueError, 'safetensors>=0.8'):
+            load_checkpoint('model.safetensors', old_loader, 'nt')
+
+    def test_non_windows_keeps_legacy_loader_compatibility(self):
+        def old_loader(path, device):
+            return (path, device)
+        self.assertEqual(load_checkpoint('model.safetensors', old_loader, 'posix'), ('model.safetensors', 'cpu'))
+
+    def test_loader_failures_are_not_retried_or_reclassified(self):
+        for error in (MemoryError('allocation'), OSError('read failure'), TypeError('bad tensor')):
+            calls = []
+            def loader(*args, **kwargs):
+                calls.append(kwargs)
+                raise error
+            with self.assertRaises(type(error)) as caught:
+                load_checkpoint('model.safetensors', loader, 'nt')
+            self.assertIs(caught.exception, error)
+            self.assertEqual(len(calls), 1)
+
     def valid_result(self):
         original = 'A short English example for testing.'
         probabilities = {'human': .1, 'ai': .6, 'ai_edited': .2, 'humanized': .1}

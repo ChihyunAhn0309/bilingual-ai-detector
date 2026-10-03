@@ -1,5 +1,6 @@
 # Optional English inference only. Korean inference requires none of these.
 torch>=2.1,<3
 transformers>=4.40,<6
-safetensors>=0.4,<1
+safetensors>=0.8,<1; sys_platform == 'win32'
+safetensors>=0.4,<1; sys_platform != 'win32'
 tokenizers>=0.19,<1
