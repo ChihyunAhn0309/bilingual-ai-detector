@@ -1,0 +1,350 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-10-03",
+  "package": "bilingual-ai-detector",
+  "version_label": "3.1.0",
+  "scope": "Independent rerun of public evaluation data, source review, actual offline inference and failure-path tests. No new provenance-confirmed population dataset.",
+  "reviewed_file_manifest_sha256": "e689e65855307706ae900feeab299d606186e022515d760d849f5c8a141a18e5",
+  "korean_model_sha256": "f3048088269f293b5f54b131a26571eefcdb9ffd57d86acfd41b4d8d71d41e1f",
+  "verdict": "Reproduced software findings R1/R3/R4/R7/R8 are fixed on the final frozen snapshot. Real supervised English inference passed with identical scores. No currently reproduced blocking software defect in examined paths. Native crash root cause remains unresolved; failure and worker-lock mitigations are verified. General stability/accuracy and rights are not certified.",
+  "findings": [
+    {
+      "id": "R1",
+      "severity": "P1",
+      "title": "영어 HTML에서 실험용·미보정·오탐 한계가 사라짐",
+      "status": "fixed_and_retested"
+    },
+    {
+      "id": "R2",
+      "severity": "P2",
+      "title": "번들 한국어 가중치 권리 범위 미확인 — 배포 금지의 증거는 아님",
+      "status": "disclosed_but_not_independently_cleared"
+    },
+    {
+      "id": "R3",
+      "severity": "P2",
+      "title": "영어 실측 결과의 UTC 측정 시각 누락",
+      "status": "fixed_and_retested"
+    },
+    {
+      "id": "R4",
+      "severity": "P2",
+      "title": "명백한 비영어 입력도 --language en이면 점수 산출",
+      "status": "fixed_for_non_latin_input_and_retested"
+    },
+    {
+      "id": "R5",
+      "severity": "P2",
+      "title": "패키지 전체 재사용 라이선스 미선택",
+      "status": "scope_disclosed_no_oss_claim"
+    },
+    {
+      "id": "R6",
+      "severity": "P2",
+      "title": "영어 모델 초기화 중 간헐적 torch_cpu.dll native crash",
+      "status": "root_cause_unresolved; supervised failure/worker-lock mitigation verified"
+    },
+    {
+      "id": "R7",
+      "severity": "P2",
+      "title": "같은 해시의 불완전·잘못된 확률 결과를 성공으로 저장",
+      "status": "fixed_and_retested",
+      "locations": [
+        {
+          "file": "scripts/run_english.py",
+          "line": 74
+        },
+        {
+          "file": "scripts/run_english.py",
+          "line": 80
+        }
+      ]
+    },
+    {
+      "id": "R8",
+      "severity": "P2",
+      "title": "부모 강제 종료 후 자식이 살아 있는데 잠금이 풀림",
+      "status": "fixed_and_retested",
+      "locations": [
+        {
+          "file": "scripts/run_english.py",
+          "line": 16
+        },
+        {
+          "file": "scripts/run_english.py",
+          "line": 59
+        },
+        {
+          "file": "scripts/run_english.py",
+          "line": 67
+        }
+      ]
+    }
+  ],
+  "software_tests": {
+    "baseline_existing_unit_tests": 45,
+    "revised_existing_unit_tests": 56,
+    "both_passed": true,
+    "independent_paths": [
+      "Actual Korean stdlib inference",
+      "Actual English short and multi-window inference",
+      "Exact Unicode quotes and feature-logit reconstruction",
+      "Paragraph removal rescoring",
+      "No-overwrite, bad-input, invalid-model and unavailable-dependency handling",
+      "Offline socket guard during inference",
+      "Revised metadata, UTC timestamp and non-Latin input guards"
+    ],
+    "native_crash": {
+      "module": "torch_cpu.dll",
+      "torch_version": "2.13.0",
+      "exception": "0xc0000005",
+      "python_versions_observed": [
+        "3.11",
+        "3.13"
+      ],
+      "subsequent_sequential_python313_run": "passed",
+      "root_cause": "not established; concurrent execution was a condition, not proven cause",
+      "mitigation": "Worker-owned CLI lock and supervised unavailable handling validated; native root cause is not fixed or proven."
+    },
+    "independent_supervisor_validation": {
+      "real_model_exit": 0,
+      "max_score_difference": 0.0,
+      "process_cases": 16,
+      "process_cases_expected_outcome": 16,
+      "schema_cases": 20,
+      "schema_cases_expected_outcome": 20,
+      "normal_subprocess_failure_null_output": true,
+      "existing_and_racing_output_preserved": true,
+      "lock_reacquisition": true,
+      "orphan_worker_protection": true,
+      "malformed_result_contract_rejected": true,
+      "simulated_native_exit_status": 3221225477,
+      "native_status_handled_as_unavailable": true,
+      "network_attempt_count": 0,
+      "fault_injection_not_accuracy_measurement": true
+    }
+  },
+  "korean_performance": {
+    "test": {
+      "all": {
+        "n": 1846,
+        "tn": 877,
+        "fp": 8,
+        "fn": 38,
+        "tp": 923,
+        "accuracy": 0.9750812567713976,
+        "fpr": 0.00903954802259887,
+        "recall": 0.9604578563995838,
+        "auroc": 0.9983468256347849,
+        "brier": 0.018493827606436065,
+        "ece10": 0.01703816513795099
+      },
+      "essay": {
+        "n": 1714,
+        "tn": 850,
+        "fp": 6,
+        "fn": 25,
+        "tp": 833,
+        "accuracy": 0.9819136522753792,
+        "fpr": 0.007009345794392523,
+        "recall": 0.9708624708624709,
+        "auroc": 0.9988535607694486,
+        "brier": 0.014204818796406714,
+        "ece10": 0.01304028966066056
+      },
+      "abstract": {
+        "n": 37,
+        "tn": 9,
+        "fp": 1,
+        "fn": 2,
+        "tp": 25,
+        "accuracy": 0.918918918918919,
+        "fpr": 0.1,
+        "recall": 0.9259259259259259,
+        "auroc": 0.9851851851851852,
+        "brier": 0.05910493105191586,
+        "ece10": 0.07659666912732954
+      },
+      "poetry": {
+        "n": 95,
+        "tn": 18,
+        "fp": 1,
+        "fn": 11,
+        "tp": 65,
+        "accuracy": 0.8736842105263158,
+        "fpr": 0.05263157894736842,
+        "recall": 0.8552631578947368,
+        "auroc": 0.9667590027700832,
+        "brier": 0.08005961995283144,
+        "ece10": 0.10754376204427119
+      }
+    },
+    "transfer_test": {
+      "all": {
+        "n": 752,
+        "tn": 375,
+        "fp": 1,
+        "fn": 20,
+        "tp": 356,
+        "accuracy": 0.9720744680851063,
+        "fpr": 0.0026595744680851063,
+        "recall": 0.9468085106382979,
+        "auroc": 0.9977153123585334,
+        "brier": 0.023017829771610092,
+        "ece10": 0.03878792031794905
+      },
+      "essay": {
+        "n": 752,
+        "tn": 375,
+        "fp": 1,
+        "fn": 20,
+        "tp": 356,
+        "accuracy": 0.9720744680851063,
+        "fpr": 0.0026595744680851063,
+        "recall": 0.9468085106382979,
+        "auroc": 0.9977153123585334,
+        "brier": 0.023017829771610092,
+        "ece10": 0.03878792031794905
+      }
+    }
+  },
+  "korean_reproduction": {
+    "documents_rescored": 2598,
+    "largest_absolute_probability_difference": 1.4432899320127035e-15,
+    "retrained_model_byte_identical": true,
+    "retrained_splits_byte_identical": true,
+    "retrained_predictions_byte_identical": true,
+    "group_and_normalized_exact_text_overlap_across_primary_splits": 0
+  },
+  "english_reproduction": {
+    "documents": 36,
+    "same_source_csv_and_input_hashes": true,
+    "largest_absolute_score_difference": 0.0,
+    "metrics": {
+      "local_at_0_5": {
+        "completed": 36,
+        "requested": 36,
+        "coverage": 1.0,
+        "human": {
+          "errors": 3,
+          "n": 12,
+          "rate": 0.25
+        },
+        "vanilla": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "style_transfer": {
+          "errors": 3,
+          "n": 12,
+          "rate": 0.25
+        },
+        "accuracy_on_completed": 0.8333333333333334
+      },
+      "local_at_card_threshold": {
+        "completed": 36,
+        "requested": 36,
+        "coverage": 1.0,
+        "human": {
+          "errors": 2,
+          "n": 12,
+          "rate": 0.16666666666666666
+        },
+        "vanilla": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "style_transfer": {
+          "errors": 6,
+          "n": 12,
+          "rate": 0.5
+        },
+        "accuracy_on_completed": 0.7777777777777778
+      },
+      "gptzero_ai_involvement": {
+        "completed": 36,
+        "requested": 36,
+        "coverage": 1.0,
+        "human": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "vanilla": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "style_transfer": {
+          "errors": 1,
+          "n": 12,
+          "rate": 0.08333333333333333
+        },
+        "accuracy_on_completed": 0.9722222222222222
+      },
+      "pangram_ai_involvement": {
+        "completed": 36,
+        "requested": 36,
+        "coverage": 1.0,
+        "human": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "vanilla": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "style_transfer": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "accuracy_on_completed": 1.0
+      },
+      "originality_ai": {
+        "completed": 36,
+        "requested": 36,
+        "coverage": 1.0,
+        "human": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "vanilla": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "style_transfer": {
+          "errors": 2,
+          "n": 12,
+          "rate": 0.16666666666666666
+        },
+        "accuracy_on_completed": 0.9444444444444444
+      }
+    }
+  },
+  "publication_scope": "Raw Korean datasets, public benchmark literary passages and optional English weights were not included in the reviewed package. Project-wide OSS license is expressly not granted. Missing upstream licenses alone do not prove that independent parameters cannot be published; no specific mandatory removal ground was identified. Rights clearance is not certified.",
+  "privacy": "This summary contains no local filesystem paths, original input passages, private logs, or account identifiers. Detailed local audit evidence is intentionally omitted.",
+  "no_external_detector_calls": true,
+  "review_state": "Final frozen v3.1 supervisor retested; R7/R8 closed; R6 root cause unresolved",
+  "reviewed_file_manifest": "reviewed-files-public.json",
+  "manifest_scope": "Final fixed v3.1 snapshot, 44 relative file paths, pycache excluded; later report copies and doc-link edits excluded.",
+  "inference_implementation_parity": {
+    "LocalDetector": true,
+    "windows": true,
+    "validate_english_input": true,
+    "main_changed_for_worker_lock": true,
+    "korean_model_weights_unchanged": true
+  },
+  "limits_addendum": [
+    "Actual process lifetime tests replace only the expensive scorer in memory; actual full-model inference is a separate passing run.",
+    "Network guard applied to both Python parent and worker processes.",
+    "A valid-looking forged result is not cryptographically authenticated by schema checks.",
+    "Only CLI workers using the same temporary lock directory are serialized; direct library calls are not."
+  ]
+}

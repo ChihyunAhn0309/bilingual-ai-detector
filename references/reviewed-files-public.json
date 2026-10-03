@@ -1,0 +1,238 @@
+{
+  "schema_version": 1,
+  "package": "bilingual-ai-detector",
+  "version_label": "3.1.0",
+  "review_state": "fixed_supervisor_retested_R7_R8_closed",
+  "review_date": "2026-10-03",
+  "hash_algorithm": "SHA256",
+  "files_digest_sha256": "e689e65855307706ae900feeab299d606186e022515d760d849f5c8a141a18e5",
+  "files_digest_encoding": "UTF-8 JSON serialization of files, ensure_ascii=False, sort_keys=True, separators comma/colon",
+  "exclusions": [
+    "__pycache__/**",
+    "*.pyc",
+    "*.pyo"
+  ],
+  "scope": "Exact reviewed source/model/docs bytes. Later copied review reports, this manifest itself and future README/review-index edits are not covered.",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "3bc90fefd364d431b13e57020aac24511b45387207a1f6ea45fb8f17884b9c50",
+      "bytes": 46
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "5b0edd94f712c11d2824c314fa8e579b0abe1a237d5837cfe50eb8599dedb0ab",
+      "bytes": 100
+    },
+    {
+      "path": "README.md",
+      "sha256": "7bb00c4e4d196a3f2f6f3afd10cd5a27e27cd8cd9dbedb5647d9a350a85b57c5",
+      "bytes": 6445
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "a624e114b40efe62daf56c7c3c739510a7a29b746ed902942586e25f300ed7bd",
+      "bytes": 14504
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "sha256": "54613f34e49c277aa6b5fe6eeb0946516da2d16ff2db9cbbe8d430a36d1b46fe",
+      "bytes": 2675
+    },
+    {
+      "path": "agents/openai.yaml",
+      "sha256": "4ad271b4157163cb603449d034a1368fa269608c72ca0e402d3ccd0371af29d6",
+      "bytes": 483
+    },
+    {
+      "path": "examples/english.txt",
+      "sha256": "19a9634a60a41711318a3ed28891b02f88455beb07835806494a4d6b7e06a692",
+      "bytes": 345
+    },
+    {
+      "path": "examples/korean.txt",
+      "sha256": "5e5e8e34b744d2ff239fccaee494024430691b57ba61707b0db06d54cd7ccf7e",
+      "bytes": 425
+    },
+    {
+      "path": "models/korean-linear-v1.json",
+      "sha256": "f3048088269f293b5f54b131a26571eefcdb9ffd57d86acfd41b4d8d71d41e1f",
+      "bytes": 2015489
+    },
+    {
+      "path": "references/benchmark-results.json",
+      "sha256": "98ffee1733efe69911671325e15eb66c8b425eacb98624a8e003dab2d3dea87c",
+      "bytes": 24732
+    },
+    {
+      "path": "references/evidence-protocol.md",
+      "sha256": "8bba178e82b7511294c5553cce3c08005566155e0654dd88f53a419ef625b6c1",
+      "bytes": 7015
+    },
+    {
+      "path": "references/free-local-model.md",
+      "sha256": "966169d18abbcc7c78126c3653666335de7972152548556ba7ea3a27ea4b955f",
+      "bytes": 7195
+    },
+    {
+      "path": "references/korean-model.md",
+      "sha256": "e8aac79ef1b8b412fa2604413dd6b05351bd83d119e6ac2e26b1b85f1ba5d984",
+      "bytes": 9140
+    },
+    {
+      "path": "references/korean-source-manifest.json",
+      "sha256": "e76184af60d2ad5ca83f2121727e637e7029aafebdbe0bc3f0721a5d841f4ee9",
+      "bytes": 2164
+    },
+    {
+      "path": "references/korean-split-manifest.jsonl",
+      "sha256": "8f090e0b867175e18083e3cc31ae522e74af8e21d5a3ebe44ac37457bf81266c",
+      "bytes": 4148056
+    },
+    {
+      "path": "references/korean-test-predictions.jsonl",
+      "sha256": "32d94cc872835b4b02ead77a0e7ab8ec3b9bc07bf6c7bca3a803b4ac5a82c77c",
+      "bytes": 1043154
+    },
+    {
+      "path": "references/korean-validation.json",
+      "sha256": "37af864a28a5d1bf612e17735551813d2dfcd50e563070cab0514a479742a53b",
+      "bytes": 121655
+    },
+    {
+      "path": "references/language-guide.md",
+      "sha256": "48a253ee49ce0d87b467a5046655f2bf94257341b89541000b7ba7705de17587",
+      "bytes": 5667
+    },
+    {
+      "path": "references/performance-comparison.md",
+      "sha256": "e93e42a1702980394b9e2904746b8788ca8048d1d4cff59ec4f6a912a3a79b3d",
+      "bytes": 8174
+    },
+    {
+      "path": "references/product-matrix.md",
+      "sha256": "5994f5d1083ecd48e3cddf3b357e66bd1fc1c453fefc47071d21e35f913ede7d",
+      "bytes": 7282
+    },
+    {
+      "path": "references/research-methods.md",
+      "sha256": "6c92fb721f5ad6ecd2d8bac124356c5d7c29a1a50f37799dc91a2edab2acf495",
+      "bytes": 7842
+    },
+    {
+      "path": "references/result-format.md",
+      "sha256": "626a37594025d81af18bf010560953a1ef13fac7dedb31999d9048a7634b9200",
+      "bytes": 7305
+    },
+    {
+      "path": "references/skill-comparison.md",
+      "sha256": "46f37b1065bac7053624b58c7d5e55c0b55e39c80731fe7f29997a55bbaf2971",
+      "bytes": 4460
+    },
+    {
+      "path": "references/tested-environment.json",
+      "sha256": "d2b0c8408a445549d86de630f72e00715a1856c30d2594164ac515e796dd687a",
+      "bytes": 380
+    },
+    {
+      "path": "references/validation.md",
+      "sha256": "d8f8f70c8e2343e5c20269497defe948840a52cf4bdebf4e6a6fc0cc2fd83b00",
+      "bytes": 7696
+    },
+    {
+      "path": "references/verification.md",
+      "sha256": "70233144c44d2fc9dc3b4535403d1b61c56a5422c080b55dc3beb04cde5df437",
+      "bytes": 13156
+    },
+    {
+      "path": "requirements-english.txt",
+      "sha256": "2427b52d1af39347619086b185a406c636c65f7d5ec12545d8b9b8b8d84c32bc",
+      "bytes": 152
+    },
+    {
+      "path": "requirements-training.txt",
+      "sha256": "8fc772a3122f554d023d470e3308cb071f516e74c15ebd30dac98481f79a0b3b",
+      "bytes": 143
+    },
+    {
+      "path": "scripts/benchmark_epoch.py",
+      "sha256": "8cbc2425bde56b46cd8d2c19af7b34e0411c77c18ca67ef977626fe385366f5b",
+      "bytes": 8455
+    },
+    {
+      "path": "scripts/detector.py",
+      "sha256": "29be5c867897018a871e15767fec45c0f0146b2ab7b1b2a84e561b2a4c919e48",
+      "bytes": 8711
+    },
+    {
+      "path": "scripts/evaluate.py",
+      "sha256": "bd2948cc686d832b8db6fa6abddd77ae549e9cd1527e121f97d5e235ba45b8c4",
+      "bytes": 7004
+    },
+    {
+      "path": "scripts/evidence.py",
+      "sha256": "e39f5672ad47ec0bb95bd4d7ee83f9833b3d16ef795cfb6f2d27d5946f5df705",
+      "bytes": 18690
+    },
+    {
+      "path": "scripts/korean_model.py",
+      "sha256": "7cf2a0e212cc1b61967b47aeb1d690da0d67a4a2a20665ce81425de83e986ada",
+      "bytes": 13350
+    },
+    {
+      "path": "scripts/local_model.py",
+      "sha256": "2b82ca2c65443e160aaeecbcd5502cabc40ff796e03be9f83aa80261655804d9",
+      "bytes": 11468
+    },
+    {
+      "path": "scripts/prepare_korean_data.py",
+      "sha256": "1da0f29e6d6fa7f9934c572807744bbb9bde22cd73db6b460faf82e39c6bd475",
+      "bytes": 2740
+    },
+    {
+      "path": "scripts/prepare_local_model.py",
+      "sha256": "a4feb871cec207652102fba55cd5a8ebb659d3371445aeb4e1066d1d5c81426f",
+      "bytes": 2498
+    },
+    {
+      "path": "scripts/run_english.py",
+      "sha256": "67f179db20cca697966069bbcf0ada792393e3e00b83c0869a937dbc8662dae9",
+      "bytes": 8155
+    },
+    {
+      "path": "scripts/runtime_guard.py",
+      "sha256": "7d1d1cbda4174d81f131969e571e0c53065de4fab7776e69471d9973127cf1b2",
+      "bytes": 1165
+    },
+    {
+      "path": "scripts/test_benchmark.py",
+      "sha256": "6d6b185c767c989b2fa53507827c3925fdda975f5186ee4e7536082a84a60fb9",
+      "bytes": 2002
+    },
+    {
+      "path": "scripts/test_detector.py",
+      "sha256": "894222c789f94cb643208e3086f01115656ab23f1a7e9986becff22ee2138112",
+      "bytes": 8153
+    },
+    {
+      "path": "scripts/test_english_runner.py",
+      "sha256": "95d78385575a44b74c92c2ccb29c57d3cdf337027ddf5aaf55ec5dcc317672e8",
+      "bytes": 6072
+    },
+    {
+      "path": "scripts/test_evidence.py",
+      "sha256": "5bec50052cc78775e53c6dc8af78106867546691b30cc3c08f2befcb106b9559",
+      "bytes": 6776
+    },
+    {
+      "path": "scripts/test_korean.py",
+      "sha256": "2a38f5d58e7c9c9d803908047aada98f0f8d97a04dbb0ab729fd9190c76a6d84",
+      "bytes": 7874
+    },
+    {
+      "path": "scripts/train_korean.py",
+      "sha256": "b0443ab0b609922ce168890a3a088ee41af051e8b7c83fa9640b02395cba7e7b",
+      "bytes": 16407
+    }
+  ]
+}

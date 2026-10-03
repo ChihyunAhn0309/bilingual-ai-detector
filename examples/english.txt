@@ -1,0 +1,3 @@
+The team changed the review procedure last month. Our count of reopened tickets fell from fourteen to nine, but two reviewers also changed roles during that period.
+
+I would keep the new procedure for another month and record both ticket counts and review time. The current comparison is too small to tell us which change caused the difference.

@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+work/
+models/tropa-mini/
+*.part
+.DS_Store
+Thumbs.db

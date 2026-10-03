@@ -1,0 +1,5 @@
+# Optional Korean retraining only; not needed to use the bundled model.
+numpy>=1.26,<3
+scipy>=1.11,<2
+scikit-learn>=1.5,<2
+threadpoolctl>=3,<4

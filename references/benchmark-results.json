@@ -1,0 +1,703 @@
+{
+  "source": "https://epoch.ai/data-insights/ai-detectors-false-negatives",
+  "repository_revision": "3f5ed200e212ef5ca957b6f5675d99ed29ff3c3c",
+  "csv_sha256": "e0580df19fdac15da00d9c338c5625a299e4607c63e670996ae6a525c7f6d124",
+  "external_detector_calls": 0,
+  "public_original_strict_verdict_metrics": {
+    "pangram": {
+      "human": {
+        "errors": 0,
+        "n": 495,
+        "rate": 0.0,
+        "metric": "FPR"
+      },
+      "vanilla": {
+        "errors": 0,
+        "n": 297,
+        "rate": 0.0,
+        "metric": "FNR"
+      },
+      "style_transfer": {
+        "errors": 30,
+        "n": 297,
+        "rate": 0.10101010101010101,
+        "metric": "FNR"
+      }
+    },
+    "gptzero": {
+      "human": {
+        "errors": 0,
+        "n": 495,
+        "rate": 0.0,
+        "metric": "FPR"
+      },
+      "vanilla": {
+        "errors": 2,
+        "n": 297,
+        "rate": 0.006734006734006734,
+        "metric": "FNR"
+      },
+      "style_transfer": {
+        "errors": 32,
+        "n": 297,
+        "rate": 0.10774410774410774,
+        "metric": "FNR"
+      }
+    },
+    "originality": {
+      "human": {
+        "errors": 19,
+        "n": 495,
+        "rate": 0.03838383838383838,
+        "metric": "FPR"
+      },
+      "vanilla": {
+        "errors": 1,
+        "n": 297,
+        "rate": 0.003367003367003367,
+        "metric": "FNR"
+      },
+      "style_transfer": {
+        "errors": 53,
+        "n": 297,
+        "rate": 0.17845117845117844,
+        "metric": "FNR"
+      }
+    }
+  },
+  "public_rule": "Only clean AI counts as detecting fully AI text. Mixed is an error on both pure classes.",
+  "versions": {
+    "GPTZero": "2026-05-11-base",
+    "Pangram": "3.3.2",
+    "Originality": "Turbo 3.0.2"
+  },
+  "paired_pilot": {
+    "seed": 20261003,
+    "authors_per_genre": 4,
+    "selection": "One human snippet and matched vanilla/style passages per randomly sampled author; models cycled.",
+    "target": "Any AI involvement; unlike the published strict rule, mixed counts as AI here for every detector.",
+    "local_aggregation": "Unweighted mean of all overlapping 768-token-window AI-involvement scores; ranking statistic, not calibrated document probability.",
+    "thresholds": "0.5 and the model-card threshold 0.9755912190656111 fixed before scoring; no fitting or selection.",
+    "requested": 36,
+    "common_completed": 36,
+    "metrics_common_rows": {
+      "local_at_0_5": {
+        "completed": 36,
+        "requested": 36,
+        "coverage": 1.0,
+        "human": {
+          "errors": 3,
+          "n": 12,
+          "rate": 0.25
+        },
+        "vanilla": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "style_transfer": {
+          "errors": 3,
+          "n": 12,
+          "rate": 0.25
+        },
+        "accuracy_on_completed": 0.8333333333333334
+      },
+      "local_at_card_threshold": {
+        "completed": 36,
+        "requested": 36,
+        "coverage": 1.0,
+        "human": {
+          "errors": 2,
+          "n": 12,
+          "rate": 0.16666666666666666
+        },
+        "vanilla": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "style_transfer": {
+          "errors": 6,
+          "n": 12,
+          "rate": 0.5
+        },
+        "accuracy_on_completed": 0.7777777777777778
+      },
+      "gptzero_ai_involvement": {
+        "completed": 36,
+        "requested": 36,
+        "coverage": 1.0,
+        "human": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "vanilla": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "style_transfer": {
+          "errors": 1,
+          "n": 12,
+          "rate": 0.08333333333333333
+        },
+        "accuracy_on_completed": 0.9722222222222222
+      },
+      "pangram_ai_involvement": {
+        "completed": 36,
+        "requested": 36,
+        "coverage": 1.0,
+        "human": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "vanilla": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "style_transfer": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "accuracy_on_completed": 1.0
+      },
+      "originality_ai": {
+        "completed": 36,
+        "requested": 36,
+        "coverage": 1.0,
+        "human": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "vanilla": {
+          "errors": 0,
+          "n": 12,
+          "rate": 0.0
+        },
+        "style_transfer": {
+          "errors": 2,
+          "n": 12,
+          "rate": 0.16666666666666666
+        },
+        "accuracy_on_completed": 0.9444444444444444
+      }
+    },
+    "predictions": [
+      {
+        "file": "corpus/blog/02_maria-popova/snippet_1.txt",
+        "genre": "blog",
+        "condition": "human",
+        "author_key": "02_maria-popova",
+        "text_sha256": "e653fd8daf5bab82b67e45066d090d530a0b8fe26fa3caddc535d4f8970ee385",
+        "gptzero_ai_involvement": false,
+        "pangram_ai_involvement": false,
+        "originality_ai": false,
+        "local_mean_window_score": 0.028263568878173828,
+        "windows": 1,
+        "local_at_0_5": false,
+        "local_at_card_threshold": false
+      },
+      {
+        "file": "stages/vanilla/blog/02_maria-popova/claude.txt",
+        "genre": "blog",
+        "condition": "vanilla",
+        "author_key": "02_maria-popova",
+        "text_sha256": "e7c61c9fd97de0c245ddc82513eeb4bb3d22524793874b21e13a08eb52dbca47",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.9999835893795535,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "stages/style_transfer/blog/02_maria-popova/claude.txt",
+        "genre": "blog",
+        "condition": "style_transfer",
+        "author_key": "02_maria-popova",
+        "text_sha256": "85119c71f48bd002926dd45ee381cdaa3226d6229dedd504b992338b6d76c899",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.987068697810173,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "corpus/blog/01_cory-doctorow/snippet_1.txt",
+        "genre": "blog",
+        "condition": "human",
+        "author_key": "01_cory-doctorow",
+        "text_sha256": "1201d00bf5084e8521a27b71a9aa04dd6137bc78acf8cb43617ff5992403d99e",
+        "gptzero_ai_involvement": false,
+        "pangram_ai_involvement": false,
+        "originality_ai": false,
+        "local_mean_window_score": 0.012407362461090088,
+        "windows": 1,
+        "local_at_0_5": false,
+        "local_at_card_threshold": false
+      },
+      {
+        "file": "stages/vanilla/blog/01_cory-doctorow/gemini.txt",
+        "genre": "blog",
+        "condition": "vanilla",
+        "author_key": "01_cory-doctorow",
+        "text_sha256": "754c482fafea80ee6921e9cc7b3010d31fa2f73fbd6ec20db572933ec7f1bd65",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.9999710709944338,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "stages/style_transfer/blog/01_cory-doctorow/gemini.txt",
+        "genre": "blog",
+        "condition": "style_transfer",
+        "author_key": "01_cory-doctorow",
+        "text_sha256": "82c92298fece312765938ae36060e2b63fb7429a8ad724fb4f5be71fd4d5c134",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": false,
+        "local_mean_window_score": 0.9981076123658568,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "corpus/blog/22_john-quiggin/snippet_1.txt",
+        "genre": "blog",
+        "condition": "human",
+        "author_key": "22_john-quiggin",
+        "text_sha256": "df3270b0881961cae4c78843b5b31bd22b7139747cef3fc43285966f94489c4f",
+        "gptzero_ai_involvement": false,
+        "pangram_ai_involvement": false,
+        "originality_ai": false,
+        "local_mean_window_score": 0.009989798069000244,
+        "windows": 1,
+        "local_at_0_5": false,
+        "local_at_card_threshold": false
+      },
+      {
+        "file": "stages/vanilla/blog/22_john-quiggin/gpt.txt",
+        "genre": "blog",
+        "condition": "vanilla",
+        "author_key": "22_john-quiggin",
+        "text_sha256": "ca14916ffc60897115190de3ccd48c710a3a89408e7c057b2623601aa1aae0e0",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.999981619996106,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "stages/style_transfer/blog/22_john-quiggin/gpt.txt",
+        "genre": "blog",
+        "condition": "style_transfer",
+        "author_key": "22_john-quiggin",
+        "text_sha256": "c9dd58c86c800d5c3e8ec169e386d79ba154bd32c75288c2be51ed767ddd5739",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.9995699689316098,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "corpus/blog/10_paul-graham/snippet_1.txt",
+        "genre": "blog",
+        "condition": "human",
+        "author_key": "10_paul-graham",
+        "text_sha256": "ff4d58a424a39db74c5df4cec5dd8564a5c44952ffc07b4ad34707365f04903e",
+        "gptzero_ai_involvement": false,
+        "pangram_ai_involvement": false,
+        "originality_ai": false,
+        "local_mean_window_score": 0.9995109616429545,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "stages/vanilla/blog/10_paul-graham/claude.txt",
+        "genre": "blog",
+        "condition": "vanilla",
+        "author_key": "10_paul-graham",
+        "text_sha256": "4570faa8f46a5289423e166acd9f120a12bb19c703c05dc817823383c39dc57c",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.9999638695771864,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "stages/style_transfer/blog/10_paul-graham/claude.txt",
+        "genre": "blog",
+        "condition": "style_transfer",
+        "author_key": "10_paul-graham",
+        "text_sha256": "9741ad8291535de4f8c77ef1446d0ccda47b5009b5d9a5d24b6c59a13f273106",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.9996714678709395,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "corpus/fiction/32_cat-rambo/snippet_1.txt",
+        "genre": "fiction",
+        "condition": "human",
+        "author_key": "32_cat-rambo",
+        "text_sha256": "4788035febb0f4802f895316c678a6fd25c1ebe0233e1ebc45efcb66e4236fd1",
+        "gptzero_ai_involvement": false,
+        "pangram_ai_involvement": false,
+        "originality_ai": false,
+        "local_mean_window_score": 0.5197269320487976,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": false
+      },
+      {
+        "file": "stages/vanilla/fiction/32_cat-rambo/claude.txt",
+        "genre": "fiction",
+        "condition": "vanilla",
+        "author_key": "32_cat-rambo",
+        "text_sha256": "df6524264e65b57c6aeac3b0bac455315571c9b32c95c9d3f5d24ba6d111b620",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.9889944652095437,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "stages/style_transfer/fiction/32_cat-rambo/claude.txt",
+        "genre": "fiction",
+        "condition": "style_transfer",
+        "author_key": "32_cat-rambo",
+        "text_sha256": "bb3dcb1c726fa64e056ae6a899b3373bd6552a083b77779e39fcdf3bae660daa",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.998994133551605,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "corpus/fiction/19_margaret-ronald/snippet_1.txt",
+        "genre": "fiction",
+        "condition": "human",
+        "author_key": "19_margaret-ronald",
+        "text_sha256": "2eb9fef3dec82b5ac4cff652487e090aa57ab416c4243c8154d96286742efdb6",
+        "gptzero_ai_involvement": false,
+        "pangram_ai_involvement": false,
+        "originality_ai": false,
+        "local_mean_window_score": 0.00561368465423584,
+        "windows": 1,
+        "local_at_0_5": false,
+        "local_at_card_threshold": false
+      },
+      {
+        "file": "stages/vanilla/fiction/19_margaret-ronald/gemini.txt",
+        "genre": "fiction",
+        "condition": "vanilla",
+        "author_key": "19_margaret-ronald",
+        "text_sha256": "82e8f961f5d3f0ac083f47f6e99fdd73884d0cbbdd431fa3e284ee75782345dd",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.9982943006325513,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "stages/style_transfer/fiction/19_margaret-ronald/gemini.txt",
+        "genre": "fiction",
+        "condition": "style_transfer",
+        "author_key": "19_margaret-ronald",
+        "text_sha256": "7bf35c0ae6c50deba7d949bcee6663c0c75102c5ba3a377d755f27d857d25d0e",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.4615844488143921,
+        "windows": 1,
+        "local_at_0_5": false,
+        "local_at_card_threshold": false
+      },
+      {
+        "file": "corpus/fiction/07_marie-vibbert/snippet_1.txt",
+        "genre": "fiction",
+        "condition": "human",
+        "author_key": "07_marie-vibbert",
+        "text_sha256": "1bb262eb097d478791dd5b9854fb95e244d6bf8a24cf1ff4984ea21911b80e4c",
+        "gptzero_ai_involvement": false,
+        "pangram_ai_involvement": false,
+        "originality_ai": false,
+        "local_mean_window_score": 0.32829946279525757,
+        "windows": 1,
+        "local_at_0_5": false,
+        "local_at_card_threshold": false
+      },
+      {
+        "file": "stages/vanilla/fiction/07_marie-vibbert/gpt.txt",
+        "genre": "fiction",
+        "condition": "vanilla",
+        "author_key": "07_marie-vibbert",
+        "text_sha256": "dffcd77f7fca7a4121f974fae77515f2bd34c021d32a9a3e0c91f5c1cd1197c1",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.9997780823905487,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "stages/style_transfer/fiction/07_marie-vibbert/gpt.txt",
+        "genre": "fiction",
+        "condition": "style_transfer",
+        "author_key": "07_marie-vibbert",
+        "text_sha256": "a8162213898db3e33b57bc44f0da916c199f67a1e5f1dc29482cc2cf85b3a84b",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.7005883157253265,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": false
+      },
+      {
+        "file": "corpus/fiction/25_chris-willrich/snippet_1.txt",
+        "genre": "fiction",
+        "condition": "human",
+        "author_key": "25_chris-willrich",
+        "text_sha256": "c32920037c395686e3bd9c9dda9c4a8daf4b9fb57cb288bf11de52af696327d3",
+        "gptzero_ai_involvement": false,
+        "pangram_ai_involvement": false,
+        "originality_ai": false,
+        "local_mean_window_score": 0.025861024856567383,
+        "windows": 1,
+        "local_at_0_5": false,
+        "local_at_card_threshold": false
+      },
+      {
+        "file": "stages/vanilla/fiction/25_chris-willrich/claude.txt",
+        "genre": "fiction",
+        "condition": "vanilla",
+        "author_key": "25_chris-willrich",
+        "text_sha256": "565f449c52c85fbe991c02e0d2e54b8ec39c91632272f5cbdf1c8e2b90587ffa",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.9998508292337647,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "stages/style_transfer/fiction/25_chris-willrich/claude.txt",
+        "genre": "fiction",
+        "condition": "style_transfer",
+        "author_key": "25_chris-willrich",
+        "text_sha256": "0a6b0e755586a388fee2b8b4ca62ca0ac938659a6b1b4459d31d4158945c1e18",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.8428797721862793,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": false
+      },
+      {
+        "file": "corpus/scientific/20_christopher-a-fuchs/snippet_1.txt",
+        "genre": "scientific",
+        "condition": "human",
+        "author_key": "20_christopher-a-fuchs",
+        "text_sha256": "e6724cd14e5ceef58b92a10885c52459c22f4bef224559423246c543cb8b6542",
+        "gptzero_ai_involvement": false,
+        "pangram_ai_involvement": false,
+        "originality_ai": false,
+        "local_mean_window_score": 0.9983254706021398,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "stages/vanilla/scientific/20_christopher-a-fuchs/claude.txt",
+        "genre": "scientific",
+        "condition": "vanilla",
+        "author_key": "20_christopher-a-fuchs",
+        "text_sha256": "1ceecca324740c05a5bf2b784f9dfed1907a733347382648fe65fb0886d17b02",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.9999828249401617,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "stages/style_transfer/scientific/20_christopher-a-fuchs/claude.txt",
+        "genre": "scientific",
+        "condition": "style_transfer",
+        "author_key": "20_christopher-a-fuchs",
+        "text_sha256": "eac5b9022b7189d7e0b6acb8690e985244b067acbf51aa979fbbeca791ee004c",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.9982117582112551,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "corpus/scientific/04_heather-j-kulik/snippet_1.txt",
+        "genre": "scientific",
+        "condition": "human",
+        "author_key": "04_heather-j-kulik",
+        "text_sha256": "3256b3fedbf93d9f705503b1ee89861416f43f6f800001ea8168c341135af996",
+        "gptzero_ai_involvement": false,
+        "pangram_ai_involvement": false,
+        "originality_ai": false,
+        "local_mean_window_score": 0.039710819721221924,
+        "windows": 1,
+        "local_at_0_5": false,
+        "local_at_card_threshold": false
+      },
+      {
+        "file": "stages/vanilla/scientific/04_heather-j-kulik/gemini.txt",
+        "genre": "scientific",
+        "condition": "vanilla",
+        "author_key": "04_heather-j-kulik",
+        "text_sha256": "a93dd2ec5f9a4e6fd307c03cb4235e12af2f3580e79e225b725b3b26ed68cacd",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.9999877547352298,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "stages/style_transfer/scientific/04_heather-j-kulik/gemini.txt",
+        "genre": "scientific",
+        "condition": "style_transfer",
+        "author_key": "04_heather-j-kulik",
+        "text_sha256": "f6c8a1e6eacb45aaa20c7e3fcfeb1430972a2821cb6bf4ad57c84b315638fd2c",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.4774749279022217,
+        "windows": 1,
+        "local_at_0_5": false,
+        "local_at_card_threshold": false
+      },
+      {
+        "file": "corpus/scientific/02_vitaly-vanchurin/snippet_1.txt",
+        "genre": "scientific",
+        "condition": "human",
+        "author_key": "02_vitaly-vanchurin",
+        "text_sha256": "9bfd51e72d778daecb22d92b2e462098fd44f2d6c9e5a34e79532ae0ff1be643",
+        "gptzero_ai_involvement": false,
+        "pangram_ai_involvement": false,
+        "originality_ai": false,
+        "local_mean_window_score": 0.011169850826263428,
+        "windows": 1,
+        "local_at_0_5": false,
+        "local_at_card_threshold": false
+      },
+      {
+        "file": "stages/vanilla/scientific/02_vitaly-vanchurin/gpt.txt",
+        "genre": "scientific",
+        "condition": "vanilla",
+        "author_key": "02_vitaly-vanchurin",
+        "text_sha256": "28355cade2f04914609b046f02d37238a6e2c32c894ee010d30add89eb488400",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.999976359647917,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "stages/style_transfer/scientific/02_vitaly-vanchurin/gpt.txt",
+        "genre": "scientific",
+        "condition": "style_transfer",
+        "author_key": "02_vitaly-vanchurin",
+        "text_sha256": "6f5032a804d96aaf546fbb2fed06bbc87c9c7f64055b58961149b1aea3f4a511",
+        "gptzero_ai_involvement": false,
+        "pangram_ai_involvement": true,
+        "originality_ai": false,
+        "local_mean_window_score": 0.40866535902023315,
+        "windows": 1,
+        "local_at_0_5": false,
+        "local_at_card_threshold": false
+      },
+      {
+        "file": "corpus/scientific/31_yaneer-bar-yam/snippet_1.txt",
+        "genre": "scientific",
+        "condition": "human",
+        "author_key": "31_yaneer-bar-yam",
+        "text_sha256": "326ef10652f833088cb755b95d93751faf64f96032a52d308ce32753f0f598c0",
+        "gptzero_ai_involvement": false,
+        "pangram_ai_involvement": false,
+        "originality_ai": false,
+        "local_mean_window_score": 0.1601848602294922,
+        "windows": 1,
+        "local_at_0_5": false,
+        "local_at_card_threshold": false
+      },
+      {
+        "file": "stages/vanilla/scientific/31_yaneer-bar-yam/claude.txt",
+        "genre": "scientific",
+        "condition": "vanilla",
+        "author_key": "31_yaneer-bar-yam",
+        "text_sha256": "c67c1378c6d626a3b6aced647b68402b2ff8098eb01bdc21e3f53e4d01eb6825",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.9999834728296264,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": true
+      },
+      {
+        "file": "stages/style_transfer/scientific/31_yaneer-bar-yam/claude.txt",
+        "genre": "scientific",
+        "condition": "style_transfer",
+        "author_key": "31_yaneer-bar-yam",
+        "text_sha256": "cba5b68b13bbdc4da6158246eb48379a392263410500637bc5b7ff6ce08eab76",
+        "gptzero_ai_involvement": true,
+        "pangram_ai_involvement": true,
+        "originality_ai": true,
+        "local_mean_window_score": 0.9660384766757488,
+        "windows": 1,
+        "local_at_0_5": true,
+        "local_at_card_threshold": false
+      }
+    ],
+    "limitations": [
+      "Small English pilot with correlated author groups, not general-purpose accuracy.",
+      "Training contamination of the local checkpoint cannot be ruled out.",
+      "Commercial verdicts are archived July 2026 versions, not freshly called current models.",
+      "No Korean comparison, probability calibration, or statistical superiority claim."
+    ]
+  }
+}

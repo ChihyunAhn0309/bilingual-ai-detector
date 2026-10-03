@@ -1,0 +1,43 @@
+{
+  "katfish_revision": "5e3dc89cc31a029be38fb2d871476b0aff7b793c",
+  "kodetect_revision": "b822d8e807298797d45003cc4171f554811cb01c",
+  "sources": [
+    {
+      "path": "essay.jsonl",
+      "url": "https://raw.githubusercontent.com/Shinwoo-Park/katfishnet/5e3dc89cc31a029be38fb2d871476b0aff7b793c/katfish_dataset/essay.jsonl",
+      "bytes": 2838670,
+      "sha256": "2cec81c53556fda7cbd73838c1802617e4dbc4edfc5318694e382bf012b70f2f"
+    },
+    {
+      "path": "abstract.jsonl",
+      "url": "https://raw.githubusercontent.com/Shinwoo-Park/katfishnet/5e3dc89cc31a029be38fb2d871476b0aff7b793c/katfish_dataset/abstract.jsonl",
+      "bytes": 5181996,
+      "sha256": "9ded02f600fc3458e047f2402f98c25058b071f3521ded136b9d443d9a458743"
+    },
+    {
+      "path": "poetry.jsonl",
+      "url": "https://raw.githubusercontent.com/Shinwoo-Park/katfishnet/5e3dc89cc31a029be38fb2d871476b0aff7b793c/katfish_dataset/poetry.jsonl",
+      "bytes": 618421,
+      "sha256": "b537843637743b824a239dd3fdac1d7671c610f019b315247664f6ed02636f02"
+    },
+    {
+      "path": "ko-detect/df_final_train_v1.csv",
+      "url": "https://raw.githubusercontent.com/gygUnig/Detect_AI_Generated_Korean_Text/b822d8e807298797d45003cc4171f554811cb01c/df_final_train_v1.csv",
+      "bytes": 24603376,
+      "sha256": "cd5c5faa8a2d9e031e9a555547f5e957743be9587492eca3468167c46c3b7d80"
+    },
+    {
+      "path": "ko-detect/df_final_valid_v1.csv",
+      "url": "https://raw.githubusercontent.com/gygUnig/Detect_AI_Generated_Korean_Text/b822d8e807298797d45003cc4171f554811cb01c/df_final_valid_v1.csv",
+      "bytes": 2471735,
+      "sha256": "6ded8657f8acca71c99a64ba86630e507039c10e5411db5c63091a26cbc875ad"
+    },
+    {
+      "path": "ko-detect/df_final_test_v2.csv",
+      "url": "https://raw.githubusercontent.com/gygUnig/Detect_AI_Generated_Korean_Text/b822d8e807298797d45003cc4171f554811cb01c/df_final_test_v2.csv",
+      "bytes": 2534556,
+      "sha256": "113730cb67d5abd71833d8577cda0053df32c46f483528c534d94432da339f3a"
+    }
+  ],
+  "note": "Public availability is not a blanket license. Raw source texts are not included in the skill distribution."
+}

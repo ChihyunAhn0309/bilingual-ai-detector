@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-10-03",
+  "scope": "Public review deliverables only; paths are relative to the directory where these four files are copied. This manifest excludes itself.",
+  "files": [
+    {
+      "path": "review-public.md",
+      "sha256": "c4e95c7066654989dd30cc8541809bc3de5407c695c2cc5bc4cbad52caa1b12b",
+      "bytes": 6991
+    },
+    {
+      "path": "review-public.json",
+      "sha256": "ed1bd42929c85eba77316cfeea174760e45da88101be0753971c4d17d04ac5cf",
+      "bytes": 11492
+    },
+    {
+      "path": "reviewed-files-public.json",
+      "sha256": "eeda8fb8dce6af1b38b45dd3443c43781d7903796f04937d947281a5bc447933",
+      "bytes": 7971
+    }
+  ]
+}
