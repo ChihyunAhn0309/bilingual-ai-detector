@@ -1,64 +1,68 @@
-# Bilingual AI Detector v3.1.0 — 독립 검수 공개 요약
+# Bilingual AI Detector v3.1.0 — public independent-review summary
 
-검수일: 2026-10-03. **검수에서 재현한 소프트웨어 결함 R1/R3/R4/R7/R8은 최종 고정본에서 수정·재검증을 마쳤다. 확인한 경로에 현재 재현되는 출시 차단 소프트웨어 결함은 남지 않았다.**
+Review date: 2026-10-03. **Software defects R1/R3/R4/R7/R8 reproduced during review were fixed and retested on the final frozen snapshot. No reproducible release-blocking software defect remained on the examined paths.**
 
-Windows/PyTorch 네이티브 충돌 R6의 근본 원인은 여전히 미확정이다. 보호 CLI의 실패 처리와 실제 worker 소유 잠금이 개선됐음을 확인했으며, 충돌 원인을 해결했거나 모든 환경에서 안정적이라고 판단하지 않는다. 법률적 권리 승인이나 범용 정확도 보증도 아니다.
+This is the English translation published with documentation version 3.1.1. The findings and measurements are unchanged. The [original review](https://github.com/ChihyunAhn0309/bilingual-ai-detector/blob/54b50bb4c5c08f570c61b9b504b86bc7bc2ad609/references/review-public.md) remains available in the 3.1.0 commit. Translation is not a new independent execution of the review.
 
-## 고정본과 공개 manifest
+The root cause of intermittent Windows/PyTorch native crashes, R6, remains unknown. Failure handling and worker-owned locking were verified; this does not establish that the underlying crash was fixed or that every environment is stable. The review is neither legal rights clearance nor a guarantee of universal accuracy.
 
-`reviewed-files-public.json`은 pyc/__pycache__ 3개를 제외한 **44개 저장소 상대 경로**의 SHA256·크기를 담는다. 파일 목록 digest: `e689e65855307706ae900feeab299d606186e022515d760d849f5c8a141a18e5`.
+## Frozen snapshot and public manifests
 
-한국어 모델 SHA256: `f3048088269f293b5f54b131a26571eefcdb9ffd57d86acfd41b4d8d71d41e1f`.
+`reviewed-files-public.json` records SHA256 hashes and sizes for **44 repository-relative paths**, excluding three pyc/cache files. Its file-list digest is `e689e65855307706ae900feeab299d606186e022515d760d849f5c8a141a18e5`.
 
-마지막 확인 시 라이브 패키지는 이 고정본과 일치했다. 이후 추가할 검수 문서·manifest 자체·README 링크·검증 기록은 이 소스 manifest 범위 밖이다. 공개 검수 파일 자체 해시는 `review-artifacts-public.json`에 별도로 기록한다. 후속 코드 변경에 이 검수를 자동 적용하면 안 된다.
+Korean model SHA256: `f3048088269f293b5f54b131a26571eefcdb9ffd57d86acfd41b4d8d71d41e1f`.
 
-## 소프트웨어 시험과 발견 상태
+The live package matched that snapshot at the last review check. Later review artifacts, manifests, README links, and verification-history additions were outside the source manifest. The English documentation update also changes document/skill-metadata hashes while leaving executable code, model weights, and evaluation data unchanged. The source manifest remains a historical record; it has not been rewritten to imply a fresh review of translated files.
 
-| 항목 | 최종 결과 |
+`review-artifacts-public.json` records the current English review-document hashes and identifies the original review commit. Do not automatically apply this review to later code changes.
+
+## Software checks and findings
+
+| Check or finding | Final reviewed result |
 | --- | --- |
-| 기존 단위 테스트 | 56개 통과; 정확도 수치가 아님 |
-| 독립 실제 subprocess 시험 | 16개 기대 결과 일치 |
-| 독립 결과 스키마 시험 | 20개 기대 결과 일치 |
-| 실제 체크포인트 보호 CLI | 성공, 이전 네 클래스 점수와 최대 차이 0, 문단 삭제 3개 |
-| R1 영어 보고서 미보정·실험용·오탐 경고 | 유지 확인 |
-| R3 측정 UTC 시각 | 원결과·첨부 결과 유지 확인 |
-| R4 명백한 비영어/빈 입력 | 사전 거부; 문자 비율은 언어 식별기가 아님 |
-| R7 불완전·무효 확률 결과 | 저장 전에 거부, null 오류·최종 결과 없음 |
-| R8 부모 종료 후 살아 있는 worker | worker 잠금 유지, 새 CLI 작업 거부 |
-| R6 native crash | 근본 원인 미확정; 실패 처리·직렬 실행 보호만 검증 |
+| Existing unit tests | 56 passed; this is not an accuracy measurement |
+| Independent subprocess checks | 16 matched their expected outcomes |
+| Independent result-schema checks | 20 matched their expected outcomes |
+| Real checkpoint through the supervisor | Succeeded; maximum change in the four class scores was 0; three paragraph deletions measured |
+| R1: English report lost uncalibrated/experimental/false-positive warnings | Warning retention verified |
+| R3: missing UTC measurement time | Preserved in the original and attached results |
+| R4: clearly non-English or empty input | Rejected before inference; script proportions are not language identification |
+| R7: incomplete or invalid probability results | Rejected before final output; null error and no final result |
+| R8: worker survives supervisor termination | Worker retained its lock and rejected a new CLI job |
+| R6: native crash | Root cause unresolved; only failure handling and serialized execution were verified |
 
-일반 worker 오류, 결과 부재, JSON/hash 오류, 입력 변경, 오류 종료 전에 남긴 결과를 거부했다. 기존 결과·원문·실행 도중 생긴 결과 파일은 덮어쓰지 않았다. 정상 잠금 경합과 해제 후 재획득도 통과했다.
+General worker errors, missing results, JSON/hash errors, changed input, and results left before an error exit were rejected. Existing outputs, source text, and an output created during execution were not overwritten. Normal lock contention and reacquisition after release also passed.
 
-Windows `ExitProcess(0xC0000005)`로 controlled worker를 종료하자 supervisor는 worker exit 3221225477을 기록하고 종료 2·null 확률·최종 결과 없음으로 처리했다. 이는 상태 코드 주입 시험이며 PyTorch crash의 신규 재현 또는 원인 해결이 아니다.
+A controlled Windows worker terminated through `ExitProcess(0xC0000005)` produced worker exit 3221225477; the supervisor returned exit 2 with null probabilities and no final result. This was an injected status-code test, not a new reproduction or root-cause repair of PyTorch's crash.
 
-프로세스 수명·실패 시험은 frozen `local_model.main`/`runtime_guard`를 실제 subprocess에서 실행하고 무거운 `LocalDetector`만 메모리에서 대체했다. 실제 모델 추론은 별도로 성공했다. 결과 검증은 모델/revision/hash, UTC, 클래스·유한성·합, 창별 원문 좌표·토큰 범위, 단일/다중창 확률 및 문단 삭제 delta 계약을 검사했다. 임의 조작 결과의 진위·semantic correctness를 인증하는 서명은 아니다.
+Lifecycle/failure checks ran the frozen `local_model.main` and `runtime_guard` in real subprocesses, replacing only the expensive `LocalDetector` in memory. Actual model inference was tested separately and succeeded. Result checks covered model/revision/hash metadata, UTC, class names, finite values and sums, original-text coordinates and token coverage, single/multi-window probability rules, and paragraph-removal deltas. These checks are not a signature authenticating arbitrary edited output or its semantic correctness.
 
-부모와 worker에 네트워크 audit guard를 적용한 추론에서 socket 시도는 없었다. 상용 탐지 API·유료 서비스·클라우드 GPU는 사용하지 않았다. 같은 temp 디렉터리의 CLI worker가 잠금 대상이며 직접 `LocalDetector` 라이브러리 호출은 보호 대상이 아니다. 넓은 dependency 범위나 다른 OS 전체를 시험한 결과는 아니다.
+Inference with network audit guards in both parent and worker attempted no socket calls. No commercial detector API, paid service, or cloud GPU was used. CLI workers sharing the same temporary directory participate in locking; direct `LocalDetector` library calls do not. The review did not test every allowed dependency combination or every operating system.
 
-## 성능 재현과 의미
+## Performance reproduction and interpretation
 
-성능 수치는 기존 공개 평가 자료를 독립 실행한 결과다. 새로 수집한 이력 검증 모집단이 아니며, 합성 기능 시험을 정확도 분모에 넣지 않았다.
+These are independent reruns of existing public evaluation data, not a newly collected provenance-confirmed population. Synthetic functionality fixtures were excluded from accuracy denominators.
 
-| 한국어 평가 | 문서 수 | 정확도 | 사람 오탐 |
+| Korean evaluation | Documents | Accuracy | Human false positives |
 | --- | ---: | ---: | ---: |
-| topic holdout 전체 | 1,846 | 97.5081% | 8/885 |
-| essay | 1,714 | 98.1914% | 6/856 |
-| abstract | 37 | 91.8919% | 1/10 |
-| poetry | 95 | 87.3684% | 1/19 |
-| 주제를 공유하는 transfer | 752 | 97.2074% | 1/376 |
+| Full topic holdout | 1,846 | 97.5081% | 8/885 |
+| Essays | 1,714 | 98.1914% | 6/856 |
+| Abstracts | 37 | 91.8919% | 1/10 |
+| Poetry | 95 | 87.3684% | 1/19 |
+| Transfer with shared topics | 752 | 97.2074% | 1/376 |
 
-전체 2,598개를 재추론한 점수 차이는 최대 1.45e-15 미만. holdout AUROC 0.9983468256, Brier 0.0184938276, ECE10 0.0170381651이었다. 원자료 6개 해시, retained 12,844개 텍스트 해시·라벨, 주요 분할 사이 group·정규화 동일 텍스트 비중복을 확인했다. 숨은 저자·의미 유사 문서의 완전 분리를 증명한 것은 아니다.
+Rescoring all 2,598 documents differed from saved scores by less than 1.45e-15. Holdout AUROC was 0.9983468256, Brier 0.0184938276, and ECE10 0.0170381651. Checks covered six source-file hashes, all retained 12,844 text hashes and labels, and absence of group/normalized-exact-text overlap across the primary splits. They do not prove complete separation of hidden authors or semantically similar documents.
 
-한국어 후보 학습·선택·별도 보정·평가를 다시 실행한 가중치, split manifest, 평가 예측이 배포본과 바이트 단위로 같았다. calibration의 50% prior·장르 균형은 사용자 모집단의 발생률이 아니다. essay가 대부분이며 abstract/poetry 사람 표본은 작다.
+Repeating Korean candidate training, selection, separate calibration, and evaluation reproduced the weights, split manifest, and test predictions byte for byte. The calibration's 50% class prior and genre balancing are not estimates of deployment prevalence. Essays dominate the evaluation, while human abstract/poetry subsets are small.
 
-영어 공개 pilot 36개를 실제 재실행한 점수는 기존 결과와 정확히 같았다. 기본 임계값 정확도 30/36(83.33%), 사람 오탐 3/12. 모델 카드 임계값에서는 28/36, 사람 오탐 2/12. 같은 표본의 과거 GPTZero verdict는 35/36이었으며 상용 서비스는 새로 호출하지 않았다.
+Rerunning the 36-document English pilot produced exactly the saved scores. Default-threshold accuracy was 30/36 (83.33%), with 3/12 human false positives. The model-card threshold yielded 28/36 and 2/12 human false positives. Archived GPTZero verdicts on the same samples scored 35/36; no commercial service was called again.
 
-최종 수정은 CLI 검증·잠금이다. AST 비교에서 `LocalDetector`, `windows`, `validate_english_input`은 앞선 성능 재현본과 동일하고 `main`만 바뀌었다. 한국어 가중치도 동일했다. 따라서 한국어 재학습과 영어 36개 pilot을 후속 패치마다 반복하지 않고 변경 경로와 실제 입력을 집중 시험했다.
+The final implementation corrections affected CLI validation and locking. AST comparison found `LocalDetector`, `windows`, and `validate_english_input` unchanged from the performance-reproduction snapshot; only `main` changed. Korean weights also remained identical. Consequently, later checks targeted changed execution paths and a real input rather than rerunning Korean training and the full English pilot after every patch.
 
-수치가 개별 사람의 작성 이력 확률을 인증하지는 않는다. 영어 모델은 독립 보정되지 않은 실험용 점수다. 문단 삭제 점수는 해당 문단의 AI 작성 확률이 아니다. 새 장르·생성 모델·humanizer에 대한 일반 성능, 한국어 GPTZero 우위, 완벽한 탐지를 입증하지 않는다. 전체 자연어 해석·반대 설명은 스킬을 사용하는 에이전트가 작성한다.
+These numbers do not certify an individual's writing history. The English checkpoint remains an independently uncalibrated experimental scorer. Paragraph-removal deltas are not paragraph-authorship probabilities. General performance on new genres, generators, or humanizers, a Korean advantage over GPTZero, and perfect detection were not established. The agent using the skill supplies the full natural-language interpretation and counterexplanations.
 
-## 배포 범위와 개인정보
+## Publication scope and privacy
 
-원자료 저장소의 라이선스 범위를 독립 확인하지 못했지만, 라이선스 파일 부재만으로 독자 학습 파라미터 공개를 자동 금지한다고 단정할 수 없다. 특정 조항 위반에 따라 반드시 모델을 제거해야 한다는 근거는 확인하지 못했다. 현재 비재배포·비 OSS 고지를 유지해야 하며 이 검수는 권리 승인으로 사용할 수 없다. 공개 열람과 자유 재사용 허가는 구분한다.
+The license scope of upstream datasets was not independently cleared. Absence of a license file alone does not establish an automatic prohibition on publishing independently trained parameters, and no specific mandatory-removal violation was identified. Preserve the notices that raw data are not redistributed and no project-wide open-source license is granted. This review does not grant rights; public access and unrestricted reuse are different.
 
-이 요약과 `review-public.json`, `reviewed-files-public.json`, `review-artifacts-public.json`에는 로컬 절대 경로·시험 원문·비공개 로그·계정 식별자가 없다. 상세 검수본·원자료 cache·native crash 로그는 공개 목록에서 제외했다.
+This summary, `review-public.json`, `reviewed-files-public.json`, and `review-artifacts-public.json` contain no private local filesystem paths, original test passages, or private logs. Public source-repository links identify the published project. Detailed local audit records, raw-data caches, and native-crash logs are excluded from the public package.

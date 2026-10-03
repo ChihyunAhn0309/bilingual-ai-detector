@@ -1,8 +1,8 @@
 ---
 name: bilingual-ai-detector
-description: "Analyze Korean and English prose for possible AI authorship using free offline models, estimated Human/AI percentages, exact passage evidence, and counterexplanations. Use for AI 탐지, 사람 작성 확률, AI detector, humanized-text assessment, and detector comparison. Includes a calibrated Korean classifier and whole-document review. Not for rewriting or certifying authorship."
+description: "Analyze Korean and English prose for possible AI authorship using free offline models, estimated Human/AI percentages, exact passage evidence, and counterexplanations. Use for AI detection, human-authorship estimates, humanized-text assessment, and detector comparison. Includes a calibrated Korean classifier and whole-document review. Not for rewriting or certifying authorship."
 metadata:
-  version: "3.1.0"
+  version: "3.1.1"
   researched: "2026-10-03"
 ---
 
@@ -80,7 +80,7 @@ python scripts/korean_model.py manuscript.txt --genre unknown --out work/korean-
 python scripts/evidence.py validate manuscript.txt work/ledger.json --model-result work/korean-result.json --out work/validated.json --html work/analysis.html
 ```
 
-The ~2 MB JSON model is included. Inference uses Python's standard library and no network. It learns character patterns from labeled Korean data and applies a sigmoid fitted on separate calibration groups. Report **사람 작성 추정 확률 / AI 작성 추정 확률** from `class_probabilities`, preserving full values in the saved record. These complementary values describe the two training labels under the documented reference population, not the probability of an independently verified writing history. The reference class prior is 50% AI with equally weighted essay/abstract/poetry genres; this is a calibration assumption, not the measured prevalence of the user's documents.
+The ~2 MB JSON model is included. Inference uses Python's standard library and no network. It learns character patterns from labeled Korean data and applies a sigmoid fitted on separate calibration groups. Report **estimated Human class probability / estimated AI class probability** from `class_probabilities`, using the user's language and preserving full values in the saved record. These complementary values describe the two training labels under the documented reference population, not the probability of an independently verified writing history. The reference class prior is 50% AI with equally weighted essay/abstract/poetry genres; this is a calibration assumption, not the measured prevalence of the user's documents.
 
 Explain both AI-direction and human-direction learned features at their exact original locations. Their signed logit contributions measure this model's computation; they do not establish universal “AI phrases.” Separately explain the full document and plausible human alternatives. The paragraph deletion result is a percentage-point score change, **not** a paragraph's AI probability. Do not silently convert model contribution magnitude into evidential strength.
 
@@ -113,7 +113,7 @@ Imports retain Human/AI/Mixed and raw values. An exact sentence match only locat
 
 Use the user's language and put the practical result first. Give each document: available percentages with exact semantics; whole-document assessment; paragraph-by-paragraph review; strongest reasons and counterreasons; assessed/excluded/unreviewed coverage; and remaining uncertainty. The detailed format is in [result-format.md](references/result-format.md).
 
-- With no suitable completed classifier, show AI/Human percentages as `산출 불가 / unavailable`. Never replace them with 50/50, subjective ranges, feature totals or an LLM vote.
+- With no suitable completed classifier, show AI/Human percentages as `unavailable` in the user's language. Never replace them with 50/50, subjective ranges, feature totals or an LLM vote.
 - Distinguish the Korean model's held-out reference calibration from the uncalibrated English model. Neither certifies the person's actual history. A flagged-text fraction and its complement are not AI/Human authorship probabilities.
 - Preserve Mixed and edited classes. Unknown authorship and mixed authorship are different.
 - Do not average incompatible provider percentages or claim ensemble gains without held-out evidence.

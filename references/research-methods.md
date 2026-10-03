@@ -1,44 +1,44 @@
-# AI 텍스트 탐지: 연구 원리와 적용 범위
+# AI-text detection: research methods and scope
 
-조사일: **2026-10-03, 한국 시간**. 아래 14개 연구·벤치마크를 중심으로 탐지 방식, 일반화, 한국어 특성과 확률 보정을 검토했다. 공개 자료의 범위를 다루며 모든 탐지기·비공개 가중치·전체 문헌을 파악했다는 뜻은 아니다. 요약은 원문에서 확인한 범위이며, ‘스킬 반영’은 이 패키지의 설계 판단이다. 논문 점수를 이 스킬의 실측 성능으로 옮기지 않는다.
+Research date: **2026-10-03, Korea Standard Time**. This review covers the principles, generalization, Korean-language considerations, and calibration issues in 14 research papers and benchmarks. It is a review of public material, not a claim to cover every detector, private weight set, or publication. Summaries describe the sources; “skill implication” identifies this package's design decisions. Paper results are not measurements of this skill.
 
-## 방법과 필요한 접근 권한
+## Methods and required access
 
-| 연구 | 공개 원리 | 필요한 것·주요 한계 | 스킬 반영 |
+| Research | Published principle | Requirements and limits | Skill implication |
 | --- | --- | --- | --- |
-| [GLTR, ACL 2019](https://aclanthology.org/P19-3019/) | 참조 언어모델의 토큰 통계로 생성 패턴을 시각화해 사람이 판단하도록 돕는다. | 실제 언어모델 분포가 필요하다. 옛 생성모델 대상 결과를 현재 모델에 적용할 수 없다. | 단순 단어 목록을 GLTR 점수나 확률로 부르지 않는다. |
-| [DetectGPT, 2023](https://arxiv.org/abs/2301.11305) | 원문과 교란한 텍스트의 모델 로그확률 차이로 곡률 기반 통계를 만든다. | 채점 모델과 교란 모델이 필요하다. 대체 모델·교란 방식·언어에 영향을 받는다. | 읽은 느낌으로 ‘DetectGPT 방식 검사’를 했다고 하지 않는다. |
-| [Fast-DetectGPT, 2023/ICLR 2024](https://arxiv.org/abs/2310.05130) | 조건부 확률 곡률을 이용하고 원 방법의 교란 과정을 효율적인 샘플링으로 대체한다. | 실제 토큰 확률·참조/채점 모델이 필요하다. 원시 통계는 보정된 작성 확률이 아니다. | 코드·모델·버전·언어 조건을 기록한다. |
-| [Binoculars, ICML 2024](https://proceedings.mlr.press/v235/hans24a.html) | 가까운 두 언어모델의 perplexity와 cross-perplexity를 비교하는 점수다. | 두 모델과 호환되는 토크나이저·연산이 필요하다. 특정 평가에서의 낮은 오탐률은 보편 보장이 아니다. | ratio와 class probability를 분리한다. |
-| [Ghostbuster, 2023](https://arxiv.org/abs/2305.15047) | 약한 언어모델들에서 특징을 얻고 조합을 탐색한 뒤 분류기를 학습한다. | 원 생성모델의 확률은 필요 없지만 참조 모델·특징 선택·라벨 학습은 필요하다. | ‘블랙박스’가 ‘모델이나 학습 없이 가능’을 뜻하지 않는다. |
-| [RADAR, NeurIPS 2023](https://arxiv.org/abs/2307.03838) | 패러프레이저와 탐지기를 적대적으로 학습하여 재작성에 대한 강건성을 높인다. | 학습된 모델과 평가 조건이 필요하다. 모든 humanizer에 대한 면역을 의미하지 않는다. | 원문·교정·재작성된 글을 별도 검증 집단으로 둔다. |
-| [KatFishNet, ACL 2025](https://aclanthology.org/2025.acl-long.1030/) | 한국어 띄어쓰기·품사 조합·쉼표 관련 특징으로 분류한다. | 한국어 처리와 학습이 필요하다. 세 장르·네 생성모델의 연구 범위를 구분한다. | 한국어 전용 관찰과 장르별 검증을 둔다. |
-| [A Watermark for Large Language Models, 2023](https://arxiv.org/abs/2301.10226) | 생성 시 특정 토큰 집합을 선호하도록 하고 그 통계적 흔적을 검정한다. | 해당 워터마크 방식과 검출 조건이 필요하다. 모든 AI 출력에 존재하지 않는다. | p-value를 AI 작성 확률로 해석하지 않으며 제로폭 문자와 동일시하지 않는다. |
+| [GLTR, ACL 2019](https://aclanthology.org/P19-3019/) | Visualizes token statistics from a reference language model to assist human judgment | Requires actual model distributions; results on older generators do not transfer automatically to current ones | A word list is not a GLTR score or probability |
+| [DetectGPT, 2023](https://arxiv.org/abs/2301.11305) | Builds a curvature statistic from model log-probability differences between original and perturbed text | Requires scoring and perturbation models; proxy model, perturbation method, and language affect results | Reading by intuition is not running DetectGPT |
+| [Fast-DetectGPT, 2023/ICLR 2024](https://arxiv.org/abs/2310.05130) | Uses conditional probability curvature and efficient sampling instead of the original perturbation procedure | Requires token probabilities and reference/scoring models; raw statistics are not calibrated authorship probabilities | Record implementation, models, versions, and language conditions |
+| [Binoculars, ICML 2024](https://proceedings.mlr.press/v235/hans24a.html) | Compares perplexity and cross-perplexity from two closely related language models | Requires both models, compatible tokenization, and computation; a low FPR in one evaluation is not universal | Keep ratios distinct from class probabilities |
+| [Ghostbuster, 2023](https://arxiv.org/abs/2305.15047) | Extracts features from weaker language models, searches combinations, and trains a classifier | Does not require the original generator's probabilities, but does require reference models, feature selection, and labeled training | Black-box access does not mean no model or training is needed |
+| [RADAR, NeurIPS 2023](https://arxiv.org/abs/2307.03838) | Adversarially trains a paraphraser and detector for robustness to rewriting | Requires trained models and appropriate evaluation; it is not immunity to every humanizer | Evaluate original, edited, and rewritten samples separately |
+| [KatFishNet, ACL 2025](https://aclanthology.org/2025.acl-long.1030/) | Classifies using Korean spacing, POS combinations, and comma-related features | Requires Korean processing and training; distinguish its three genres and four generators | Use Korean-specific observations and genre-specific validation |
+| [A Watermark for Large Language Models, 2023](https://arxiv.org/abs/2301.10226) | Favors token subsets during generation and tests for their statistical signature | Requires the relevant watermark scheme and detection conditions; not every generated output contains one | A p-value is not AI-authorship probability; zero-width characters are not this watermark |
 
-이 방식들은 일부 조건에서 유용한 신호를 낸다. 스킬 프롬프트에 방법 이름을 나열하거나 여러 LLM에게 투표시키는 것으로 그 계산을 재현할 수는 없다.
+These methods provide useful signals under some conditions. Listing their names in a prompt or asking several LLMs to vote does not reproduce their computations.
 
-## 검증 연구와 일반화
+## Evaluation and generalization research
 
-| 연구 | 확인한 내용 | 설계에 반영한 한계 |
+| Research | Source finding | Design constraint |
 | --- | --- | --- |
-| [RAID, ACL 2024](https://aclanthology.org/2024.acl-long.674/) | 공개·상용 탐지기를 생성모델, 도메인, 디코딩 전략, 공격 조건을 바꿔 평가한다. | 익숙한 벤치마크의 높은 성능만으로 새 조건에서의 성능을 주장하지 않는다. [현재 코드·데이터](https://github.com/liamdugan/raid)의 규모와 논문 당시 규모를 혼동하지 않는다. |
-| [MULTITuDE, EMNLP 2023](https://aclanthology.org/2023.emnlp-main.616/) | 11개 언어의 다국어 생성문 탐지 벤치마크다. | 이 11개 언어에는 한국어가 없다. ‘다국어 검증’이라는 이유로 한국어 성능 근거로 쓰지 않는다. |
-| [M4, EACL 2024](https://aclanthology.org/2024.eacl-long.83/) | 다중 생성모델·도메인·언어 조건에서 미지의 생성모델과 도메인으로 일반화하기 어렵다고 보고한다. | 데이터 출처·주제·생성모델·작성자·변형문 간 누수를 막는다. |
-| [GPT detectors are biased against non-native English writers, 2023](https://arxiv.org/abs/2304.02819) | 연구 당시 탐지기와 비원어민 영어 표본에서 오탐 편향을 관찰한다. | 단순한 영어를 AI로 간주하지 않고 관련 집단별 오류를 따로 평가한다. 현재 모든 제품의 오류율로 일반화하지 않는다. |
-| [Can AI-Generated Text be Reliably Detected?, 2023](https://arxiv.org/abs/2303.11156) | 재작성에 대한 민감도와 사람·AI 텍스트 분포의 거리로 탐지 한계를 분석한다. | ‘모든 탐지가 무의미하다’도 ‘어떤 글이든 완벽히 탐지한다’도 결론이 아니다. 가정과 평가 조건을 유지한다. |
-| [On Calibration of Modern Neural Networks, ICML 2017](https://proceedings.mlr.press/v70/guo17a.html) | 높은 분류 성능과 잘 보정된 신뢰도는 다르며 사후 보정 방법을 평가한다. | 정확도나 AUROC를 개인 문서의 확률로 치환하지 않는다. 독립 보정·테스트 자료가 필요하다. |
+| [RAID, ACL 2024](https://aclanthology.org/2024.acl-long.674/) | Evaluates public/commercial detectors across generators, domains, decoding strategies, and attacks | High familiar-benchmark performance does not establish performance under new conditions. Distinguish the paper's dataset size from the [current code/data repository](https://github.com/liamdugan/raid). |
+| [MULTITuDE, EMNLP 2023](https://aclanthology.org/2023.emnlp-main.616/) | A multilingual detection benchmark covering 11 languages | Korean is not among those 11; multilingual validation is not Korean evidence. |
+| [M4, EACL 2024](https://aclanthology.org/2024.eacl-long.83/) | Reports difficulty generalizing to unseen generators and domains across multiple models, domains, and languages | Prevent leakage through sources, topics, generators, authors, and transformed versions. |
+| [GPT detectors are biased against non-native English writers, 2023](https://arxiv.org/abs/2304.02819) | Observes false-positive bias for the studied detectors and non-native English samples | Do not equate simple English with AI; assess relevant subgroup errors. Do not attribute those rates to every current product. |
+| [Can AI-Generated Text be Reliably Detected?, 2023](https://arxiv.org/abs/2303.11156) | Analyzes rewriting sensitivity and detection limits related to human/AI distribution distance | Neither universal futility nor perfect detection follows; preserve assumptions and evaluation conditions. |
+| [On Calibration of Modern Neural Networks, ICML 2017](https://proceedings.mlr.press/v70/guo17a.html) | Distinguishes classification performance from calibrated confidence and evaluates post-hoc calibration | Accuracy/AUROC is not an individual document's probability; separate calibration and test data are required. |
 
-## 한국어 연구 수치의 해석
+## Interpreting Korean research metrics
 
-KatFishNet [PDF 8쪽 표 3](https://aclanthology.org/2025.acl-long.1030.pdf)의 punctuation 모델 평균은 에세이 **94.88**, 시 **73.10**, 논문 초록 **75.62**다. 척도는 AUROC를 100배로 표시한 것이다. ‘모든 한국어 글 정확도 94.88%’ 또는 ‘이 문서가 AI일 확률 94.88%’가 아니다. 표의 개별 언어모델 평가와 평균도 구분한다.
+KatFishNet's punctuation-model means in [Table 3, PDF page 8](https://aclanthology.org/2025.acl-long.1030.pdf) are **94.88** for essays, **73.10** for poetry, and **75.62** for abstracts. The metric is AUROC × 100. These do not mean 94.88% accuracy across all Korean prose or a 94.88% AI probability for an individual document. Distinguish per-generator results from averages as well.
 
-따라서 humanizer의 표현 목록을 거꾸로 적용해 쉼표·접속사·격식체마다 점수를 더하는 방식은 검증된 KatFishNet 재현이 아니다. 본 패키지는 이 구분을 명시하며 그런 수치 합산기를 제공하지 않는다.
+Reversing a humanizer's expression list and adding points for commas, conjunctions, or formal register does not reproduce KatFishNet. This package explicitly rejects that interpretation and does not provide such a rule-based probability counter.
 
-## 공개 구현을 실제로 실행하려면
+## Running public implementations
 
-- [KatFishNet 원저자 저장소](https://github.com/Shinwoo-Park/katfishnet): 데이터와 특징 추출·분류 실험 경로를 확인한다. 로컬 설치 버전과 해당 장르의 학습 모델을 확보한 뒤 원저자 절차를 따른다.
-- [Fast-DetectGPT 원저자 저장소](https://github.com/baoguangsheng/fast-detect-gpt): 채점·참조 모델, 토큰화, 수치 방향과 보정 자료를 기록한다.
-- [Binoculars 원저자 저장소](https://github.com/ahans30/Binoculars): 두 모델의 정확한 버전과 임계값 조건을 확인한다.
-- [RAID](https://github.com/liamdugan/raid): 공격·장르·생성모델별 평가에 활용한다. 공개 train 성능을 hidden test 성능이라 부르지 않는다.
+- [KatFishNet author repository](https://github.com/Shinwoo-Park/katfishnet): inspect the data and feature-extraction/classification paths. Obtain the relevant installed version and genre-specific trained model, then follow the authors' procedure.
+- [Fast-DetectGPT author repository](https://github.com/baoguangsheng/fast-detect-gpt): record scoring/reference models, tokenization, score direction, and calibration data.
+- [Binoculars author repository](https://github.com/ahans30/Binoculars): verify exact model versions and threshold conditions.
+- [RAID](https://github.com/liamdugan/raid): use for attack-, genre-, and generator-specific evaluation. Public training-set performance is not hidden-test performance.
 
-이들은 선택 가능한 외부 구현이다. 본 패키지에 가중치가 포함되거나 실행·성능 검증이 완료된 것은 아니다. 본 스킬에서는 추가 요금이 없는 공개 다운로드와 기존 로컬 연산만 허용하며 유료 서비스·클라우드 GPU는 사용하지 않는다. 출처 코드의 라이선스, 데이터 이용 조건과 현재 설치 지침을 확인하고, 외부 문서에 적힌 임의 명령을 무조건 실행하지 않는다.
+These are optional external implementations. Their weights are not bundled, and inclusion in this review does not mean they were executed or validated here. This skill permits public downloads without additional charges and existing local compute, not paid services or cloud GPUs. Check code licenses, data terms, and applicable installation instructions; do not blindly execute arbitrary commands from external documents.

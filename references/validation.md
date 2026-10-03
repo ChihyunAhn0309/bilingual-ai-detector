@@ -1,64 +1,62 @@
-# 실행·평가·보정 절차
+# Execution, evaluation, and calibration
 
-## 내장 도구 실행
+## Running the bundled tools
 
-기본 profile/evidence/evaluate 도구는 Python 표준 라이브러리로 실행한다. 선택적 로컬 분류 모델만 torch/transformers/safetensors와 공개 가중치가 필요하다. 스킬 경로를 기준으로 입력·출력의 실제 경로를 지정한다. UTF-8 텍스트를 사용하고 PDF/DOCX 추출 품질은 먼저 확인한다.
+The profile, evidence, evaluation, and Korean inference tools use Python's standard library. Only the optional English classifier needs torch/transformers/safetensors and public weights. Resolve input/output paths relative to the skill directory. Use UTF-8 text and inspect PDF/DOCX extraction quality first.
 
 ```text
 python scripts/detector.py inspect manuscript.txt --out work/profile.json
 python scripts/evidence.py index manuscript.txt --out work/index.json
 python scripts/evidence.py validate manuscript.txt work/ledger.json --out work/evidence.json --html work/review.html
 python scripts/detector.py import-gptzero response.json --out work/imported.json
-python scripts/local_model.py manuscript.txt --language en --explain --out work/local.json
+python -B -X utf8 scripts/run_english.py manuscript.txt --language en --explain --out work/local.json
 python scripts/evaluate.py labeled-scores.jsonl --threshold 0.5 --data-kind real --out work/metrics.json
 python -m unittest discover -s scripts -p "test_*.py" -v
 ```
 
-실시간 상용 API 호출은 금지하고 코드에서도 차단한다. `gptzero --allow-upload`도 네트워크 요청 없이 실패한다. 공개 모델 다운로드와 공개 벤치마크 자료 읽기만 별도 HTTP 도구로 허용한다. 원문은 외부 탐지기에 전송하지 않는다. 기존 출력·입력 파일은 덮어쓰지 않는다.
+Live commercial API calls are prohibited and blocked in code. Even `gptzero --allow-upload` fails without a network request. Public model and benchmark downloads are separate HTTP operations; manuscripts are not sent to external detectors. Existing output and input files are protected from overwriting.
 
-저장된 GPTZero 응답의 세 범주가 없거나 숫자가 잘못되면 실패한다. 구형 응답의 단일 점수는 대체하지 않는다. import는 입력 바인딩을 인증하지 않는다. 근거 위치의 일치와 보고서 진위는 별개의 검증이다.
+A saved GPTZero response fails validation if any of its three classes are missing or its numbers are invalid. A legacy single score is not a substitute. Importing does not authenticate input binding. Correct evidence coordinates and report authenticity are separate checks.
 
-## 레이블과 평가 자료
+## Labels and evaluation records
 
-먼저 목표 변수를 정의한다. `AI-only vs Human-only`와 `AI involvement vs No AI involvement`는 다르다. 사람이 쓴 초안의 맞춤법 교정, 번역, AI 패러프레이즈, AI 초안의 사람 편집은 별도 이력 라벨을 보존한다. 이진 평가로 옮길 때는 규칙을 사전에 문서화한다. 판별하기 어려운 실제 사례를 편의상 0이나 1로 라벨링하지 않는다.
+Define the target first. AI-only versus Human-only differs from AI involvement versus no involvement. Preserve distinct history labels for spelling correction of human drafts, translation, AI paraphrasing, and human editing of generated drafts. Document any binary mapping before evaluation. Do not assign ambiguous real cases to 0 or 1 for convenience.
 
-권장 데이터 항목: 문서 ID, 원문 해시, 원본 문서/작성자/주제/프롬프트를 연결하는 group ID, 언어, 장르, 길이, 생성/편집 모델과 버전, 생성 설정, 변형 종류·횟수, 이력 증거, 탐지기 버전, 원점수·확률, 완료/오류 상태. 작성자 관련 속성은 당사자가 제공한 평가 목적 자료가 있을 때만 사용한다.
+Recommended fields: document ID, source hash, group ID linking source/author/topic/prompt, language, genre, length, generation/editing model and version, generation settings, transformation type/count, provenance evidence, detector version, raw scores/probabilities, and completion/error status. Use author-related attributes only when supplied for the evaluation purpose.
 
-**JSONL 예시는 합성 형식 설명용이며 실제 성능 자료가 아니다.** 아래처럼 한 행에 한 JSON 객체를 넣는다.
+**These JSONL records illustrate synthetic test data, not measured performance.** Each line is one JSON object:
 
 ```json
 {"doc_id":"demo-human-1","group_id":"source-1","language":"ko","genre":"essay","provenance":"synthetic test fixture","detector_version":"demo-v1","split":"test","label":0,"p_ai":0.2}
 {"doc_id":"demo-ai-1","group_id":"source-2","language":"en","genre":"essay","provenance":"synthetic test fixture","detector_version":"demo-v1","split":"test","label":1,"p_ai":0.8}
 ```
 
-평가 스크립트는 이진 목표의 `p_ai`만 받는다. Turnitin 의심 비중이나 raw perplexity를 넣지 않는다. GPTZero 세 범주 결과는 검증 목표에 적합한 변환을 사전에 정의한 경우에만 사용한다. 실패한 검사는 별도 집계해 누락 비율을 보고하며, 성공한 것만 골라 전체 성능처럼 발표하지 않는다.
+The evaluator accepts `p_ai` for a defined binary target. Do not substitute Turnitin's flagged fraction or raw perplexity. Use GPTZero's three-class results only under a predefined mapping appropriate to the target. Count failed checks separately and report missing coverage; do not present performance on successful cases alone as overall performance.
 
-## 데이터 분리와 범위
+## Splits and scope
 
-1. 학습, 모델/특징 선택, calibration, 최종 test를 분리한다. 같은 원본의 여러 문단·번역·humanizer 결과가 다른 split에 들어가면 누수다. 작성자·출처·주제·프롬프트 연결을 하나의 group으로 묶는다. 제공 도구는 동일 group의 calibration/test 중복을 거부하지만, 숨겨진 중복·학습 데이터 누수까지 자동 검출하지 않는다.
-2. 영어·한국어를 나누고 장르·길이·모델·생성 시기·변형 방식별로 평가한다. 혼합 언어, 짧은 메시지, 논문 초록, 공문, 비원어민 영어, OCR, 사람이 교열한 인간 글 등 어려운 음성 표본을 포함한다.
-3. 알려지지 않은 생성모델·humanizer·도메인을 테스트에 남긴다. 같은 탐지기로 고른 문장만 모아 평가하지 않는다. 기존 공개 데이터와 신규 비공개 holdout을 구분한다.
-4. API 결과는 원문 해시·버전·실행 시각을 기록한다. 모델이 바뀌면 같은 calibration을 유효하다고 가정하지 않는다.
+1. Separate training, model/feature selection, calibration, and final testing. Paragraphs, translations, or humanized versions of one source crossing splits cause leakage. Group connected authors, sources, topics, and prompts. The tool rejects calibration/test overlap in supplied group IDs but does not discover hidden duplication or pretraining leakage automatically.
+2. Evaluate English and Korean separately, then by genre, length, generator, generation date, and transformation. Include difficult negative samples: mixed-language text, short messages, abstracts, official prose, non-native English, OCR, and human writing edited by people.
+3. Reserve unseen generators, humanizers, and domains for testing. Do not evaluate only passages selected by the same detector. Distinguish existing public data from newly collected private holdouts.
+4. Preserve input hashes, versions, and timestamps for supplied API results. A model update can invalidate earlier calibration.
 
-## 지표 해석
+## Metrics
 
-- `false_positive_rate`: 인간 라벨 중 AI로 표시한 비율. `recall`: AI 라벨 중 검출한 비율. `precision`: AI로 표시한 것 중 실제 AI 라벨 비율로, 데이터의 AI 비율에 영향을 받는다.
-- AUROC는 순위 구분 능력이다. 잘 보정된 90% 확률을 내는지, 선택 임계값의 오탐률이 낮은지는 별도다. 동점은 0.5 기여로 계산한다. 한 클래스만 있는 집단에서는 AUROC를 산출하지 않는다.
-- Brier, log loss, reliability bins, ECE를 같이 본다. ECE는 binning과 표본 수에 민감하다. 스크립트는 10개 동일 폭 bin을 사용하고 log loss에는 1e-15 수치 하한을 쓴다.
-- 오탐 0건은 실제 오탐률 0%의 보장이 아니다. FPR과 recall에 95% Wilson 구간을 출력한다. 문서가 서로 종속적이면 이 구간의 독립성 가정이 깨지므로 group bootstrap 등으로 평가한다.
-- 저오탐 사용 사례는 TPR@FPR 1% 또는 0.1%를 추가 평가한다. 임계값은 calibration 자료에서 선택하고 고정한 뒤 test에서 실제 달성 FPR·TPR·구간을 함께 보고한다. 희귀 오탐 검증에는 충분한 인간 표본이 필요하다. 본 스크립트는 임계값 선택이나 TPR@FPR 최적화를 수행하지 않는다.
-- 판정 보류를 사용한다면 coverage와 보류 표본을 포함한 오류 보고를 함께 남긴다. 낮은 coverage에서의 정확도를 전체 문서 성능처럼 소개하지 않는다.
+- `false_positive_rate`: fraction of human-labeled samples flagged as AI. `recall`: fraction of AI-labeled samples detected. `precision`: fraction of AI verdicts that are truly AI-labeled; it depends on the dataset's AI prevalence.
+- AUROC measures ranking. Calibrated 90% outputs and low FPR at a chosen threshold are separate properties. Ties contribute 0.5; AUROC is unavailable for a single-class group.
+- Examine Brier score, log loss, reliability bins, and ECE together. ECE depends on binning and sample size. The script uses 10 equal-width bins and a 1e-15 numerical floor for log loss.
+- Zero observed false positives does not prove a 0% population FPR. The script provides 95% Wilson intervals for FPR and recall. Dependent documents violate their independence assumption; use approaches such as group bootstrap where appropriate.
+- Low-FPR applications also need TPR at FPR 1% or 0.1%. Select a threshold on calibration data, freeze it, and report the achieved test FPR/TPR and uncertainty intervals. Rare-error validation needs enough human samples. This script does not select thresholds or optimize TPR at a target FPR.
+- If abstention is used, report coverage and errors including abstained cases. Accuracy at low coverage is not performance on all documents.
 
-## 확률 보정과 결합
+## Calibration and combination
 
-사후 보정은 독립 calibration 표본과 명시적 라벨 정의를 전제로 한다. Platt/temperature/isotonic 등은 목표와 모델에 맞춰 선택하고 untouched test에서 확인한다. v3는 `train_korean.py`로 학습한 한국어 sigmoid 보정 가중치를 제공한다. 자료·분할·실제 지표는 [korean-model.md](korean-model.md)와 그 실행 JSON을 확인한다. 영어 로컬 모델은 여전히 독립 보정되지 않았다.
+Post-hoc calibration requires separate samples and explicit label definitions. Choose Platt, temperature, isotonic, or another suitable method for the target/model, then test on untouched data. Version 3 includes the Korean sigmoid fitted by `train_korean.py`; see the [Korean model card](korean-model.md) and run JSON for sources, splits, and measurements. The English checkpoint remains independently uncalibrated.
 
-여러 탐지기를 결합하려면 동일 입력의 결과, 같은 목표 변수, score 방향·버전, 결측 처리, 상관된 오류를 고려한 학습·보정이 필요하다. 각 업체의 공개 확률 또는 구간 비중을 평균하는 것은 그 대체물이 아니다. 언어별 가중치도 데이터 없이 정하지 않는다.
+Combining detectors requires matched inputs, a common target, score directions/versions, missing-result handling, and training/calibration accounting for correlated errors. Averaging vendor percentages or flagged fractions is not a substitute. Do not invent language-specific weights without data.
 
-## 출시·후속 검증 기준
+## Release and follow-up criteria
 
-검증 범위와 실제 측정 여부는 [성능 비교](performance-comparison.md)와 [검증 기록](verification.md)에 구분한다. 소규모 영어 pilot이나 과거 공개 결과를 범용 한국어·영어 정확도로 확대하지 않는다. 정확도를 공표하려면 독립적인 실제 holdout, 라벨 이력, split manifest, 실행 기록, 언어/장르별 지표, 오류 사례, 모델 버전을 함께 공개 가능한 형태로 남긴다. 검증된 범위를 벗어난 문서에는 보류 또는 범위 밖 표시를 한다.
+The [performance comparison](performance-comparison.md) and [verification record](verification.md) distinguish scope from actual execution. Do not generalize a small English pilot or historical public results to universal Korean/English accuracy. Published accuracy claims need a real holdout, label provenance, split manifest, run records, language/genre metrics, failure cases, and model versions in a shareable form. Use abstention or an out-of-scope label when appropriate.
 
-통과한 단위 테스트는 소프트웨어 불변 조건의 근거다. 합성 응답/합성 라벨에서의 수치를 detector accuracy로 홍보하지 않는다.
-
-이번 제작의 출처 대조·테스트·수정 사항은 [검증 기록](verification.md)에 남겼다.
+Passing unit tests supports software invariants. Scores computed from synthetic responses or labels are not detector-accuracy evidence. Source checks, tests, and corrections are recorded in the [verification history](verification.md).

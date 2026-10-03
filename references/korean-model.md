@@ -1,72 +1,76 @@
-# 한국어 확률 모델과 검증 범위
+# Korean probability model and validation scope
 
-v3에는 **실제 학습한 한국어 분류기**가 포함된다. 사람/AI 추정 확률을 계산하며 추가 탐지 서비스 요금, API 키, GPU, 모델 다운로드가 필요 없다. Python 3 표준 라이브러리로 실행한다. 약 2 MB의 `models/korean-linear-v1.json`이 가중치다. 텍스트가 보존된 로컬 파일을 입력한다.
+Version 3 introduced a **trained Korean classifier** that computes estimated Human/AI probabilities without additional detector-service fees, an API key, GPU, or model download. Inference uses the Python standard library. The approximately 2 MB `models/korean-linear-v1.json` contains its weights. Supply a local file preserving the original text.
 
 ```text
 python scripts/korean_model.py manuscript.txt --genre unknown --out work/korean-result.json
 ```
 
-`--genre essay|abstract|poetry|unknown`은 적용 범위 표시이며 점수를 바꾸는 스위치가 아니다. 실제 장르가 업무 보고서·소설·채팅 등이면 `unknown`을 사용한다. Korean-dominant 조건은 한글 10자 이상, 알파벳 문자 중 한글 50% 이상이다. 이는 입력 필터이지 검증된 최소 길이가 아니다. 학습 길이의 가운데 90%는 **210~907 Unicode codepoints**이며 이 범위를 벗어나면 경고를 붙인다. 200,000자 초과는 명시적으로 거부하고 몰래 자르지 않는다. 그 이하도 긴 문서의 정확도가 입증된 것은 아니다.
+`--genre essay|abstract|poetry|unknown` labels applicability; it does not change the score. Use `unknown` for business reports, fiction, chat, and other unevaluated genres. The Korean-dominant input filter requires at least 10 Hangul characters and at least 50% Hangul among alphabetic characters. This is an input screen, not a validated minimum length.
 
-## 출력과 근거
+The middle 90% of training lengths spans **210–907 Unicode codepoints**; other lengths receive a warning. Inputs above 200,000 characters are explicitly rejected rather than silently truncated. Acceptance below that limit does not establish long-document accuracy.
 
-- `class_probabilities.human`, `.ai`: 보정한 두 클래스 추정값. 합은 1이다. 사람과 AI가 함께 쓴 글, AI 교정만 받은 글은 별도 클래스로 학습하지 않았다.
-- `calibration`: 별도 1,907개·52개 그룹으로 맞춘 sigmoid. 기준은 AI/사람 각 50%, 에세이/초록/시 동일 가중치다. 사용자의 실제 AI 사용률을 측정한 값이 아니다. 모집단이 달라지면 확률 보정도 달라진다.
-- `feature_explanation.lexical`: 영향이 큰 문자 2~5-gram 30개와 실제 원문 위치 최대 5곳씩. 양수는 이 모델의 AI logit을 올리고 음수는 낮춘다. 이는 **이 모델의 계산 근거**이지 그 표현의 보편적 AI 작성 증거가 아니다. 겹치는 특징들을 독립된 증거로 세지 않는다.
-- `intercept_contribution + all_feature_contributions_sum`: 전체 보정 logit과 일치한다. sigmoid를 취하면 AI 추정 확률이 된다. 화면에 표시한 상위 30개만 더해서 전체 점수를 복원할 수는 없다.
-- `paragraph_sensitivity`: 원점수에서 해당 문단 삭제 후 점수를 뺀 percentage points. 문맥·길이·정규화가 동시에 바뀌므로 문단 작성 확률이나 문장 인과 설명이 아니다. 기본 60문단 한도를 넘으면 미측정 수를 표시한다. 본문 분류 자체는 전체를 사용한다.
-- `applicability_cautions`: 길이·장르·학습 문자 패턴 비중 경고. 최종 보고서에도 남긴다.
-- `text_sha256`, `model_sha256`, `measured_at_utc`: 입력·가중치·측정 시점의 기록. 해시는 생성 이력 인증이 아니다.
+## Outputs and explanations
 
-관찰·해석·사람 글의 대안 설명은 스킬이 문서 전체를 읽어 작성한다. 모델의 작은 문자 조각에 의미를 지어 붙이지 않는다. 예를 들어 ‘새 ’가 양의 기여를 했어도 ‘새’가 AI 전용 어휘라는 뜻은 아니다. 업무 맥락의 구체성, 논증, 어미 변화는 별도 문체 관찰로 설명한다.
+- `class_probabilities.human` and `.ai`: calibrated estimates for two mutually exclusive training labels, summing to 1. Mixed authorship and AI-only editing were not trained as separate classes.
+- `calibration`: a sigmoid fitted on separate data containing 1,907 documents and 52 groups. Its reference gives AI/Human equal 50% priors and equal weight to essays, abstracts, and poetry. It does not measure the user's actual AI prevalence; distribution changes can affect calibration.
+- `feature_explanation.lexical`: the 30 strongest character 2–5-grams and up to five exact original locations for each. Positive values raise this model's AI logit; negative values lower it. These are **computational contributions in this model**, not universal evidence of AI authorship. Overlapping features are not independent votes.
+- `intercept_contribution + all_feature_contributions_sum`: reconstructs the calibrated logit, whose sigmoid gives the AI estimate. The displayed top 30 features alone cannot reconstruct the full score.
+- `paragraph_sensitivity`: the original score minus the score after deleting a paragraph, in percentage points. Context, length, and normalization all change, so this is neither paragraph-authorship probability nor causal sentence attribution. The default limit is 60 paragraph deletions; skipped counts are disclosed. Classification itself uses the full document.
+- `applicability_cautions`: length, genre, and learned-pattern coverage warnings. Retain them in the final report.
+- `text_sha256`, `model_sha256`, and `measured_at_utc`: input, weights, and measurement records. Hashes do not authenticate generation history.
 
-## 학습 원리와 자료
+The agent reviews the whole document to write observations, interpretations, and plausible human alternatives. Do not invent semantic significance for small character fragments. A positive contribution from a fragment such as “새 ” does not make that expression AI-only vocabulary. Specificity, argument quality, and changes in endings belong in a separate stylistic analysis.
 
-`korean-char-style-logistic-v1`은 문자 TF-IDF + 로지스틱 회귀다. KatFishNet의 모델을 복제하거나 한국어 LLM을 미세 조정한 것이 아니다. 어휘 40,000개, 문자 2~5-gram, sublinear TF, L2 문서 정규화, min_df=3을 사용한다. 학습에서만 어휘·IDF·scaler를 맞췄다. C={0.5,2,8}, 표면 특징 가중치={0,0.25}의 사전 고정 6개 후보 중 선택 자료의 장르/클래스 균형 log loss로 **C=8, 표면 특징 가중치=0**을 선택했다. 따라서 16개 표면 특징은 관찰값으로 제공되지만 최종 모델에 직접 기여하지 않는다. 모델 선택 후 별도 그룹으로 regularized sigmoid를 맞췄다. 최종 평가 결과를 보고 가중치·임계값을 바꾸지 않았다.
+## Training method and data
 
-자료 출처:
+`korean-char-style-logistic-v1` uses character TF-IDF and logistic regression. It is neither a copy of KatFishNet nor a fine-tuned Korean LLM. It uses 40,000 vocabulary features, character 2–5-grams, sublinear TF, L2 document normalization, and `min_df=3`. Vocabulary, IDF, and scaler fitting use training data only.
 
-- [KatFishNet 공개 저장소](https://github.com/Shinwoo-Park/katfishnet), revision `5e3dc89cc31a029be38fb2d871476b0aff7b793c`: 한국어 에세이·논문 초록·시와 AI 생성문. [ACL 2025 논문](https://aclanthology.org/2025.acl-long.1030/)은 원 연구이며 아래 수치는 이번 별도 모델의 측정값이다.
-- [Detect_AI_Generated_Korean_Text](https://github.com/gygUnig/Detect_AI_Generated_Korean_Text), revision `b822d8e807298797d45003cc4171f554811cb01c`: train/valid와 여러 생성 모델의 test-v2. 원 저장소의 성능 주장을 이번 모델로 옮기지 않는다.
-- 확률 보정의 방법·평가 기준: [scikit-learn 공식 설명](https://scikit-learn.org/stable/modules/calibration.html). 보정은 정확도를 반드시 높이는 절차가 아니다.
+Six predefined candidates combine C={0.5,2,8} and surface-feature weight={0,0.25}. Genre/class-balanced log loss on selection data chose **C=8 and surface-feature weight=0**. The 16 surface features remain available as observations but make no direct contribution to the selected classifier. After selection, a regularized sigmoid was fitted on separate groups. Weights and thresholds were not changed in response to final-test results.
 
-원본 12,894행에서 정규화된 동일 텍스트 50개를 제거해 12,844행을 사용했다. 문서 전체를 하나의 단위로 유지하고 에세이 주제, 초록 제목, 원 시 그룹 및 데이터셋 사이 동일 텍스트 연결을 함께 묶었다. 학습 6,621개, 선택 1,718개, 보정 1,907개, 주제 분리 최종 평가 1,846개, 별도 전이 평가 752개다. 학습/선택/보정/최종 평가의 그룹은 서로 분리했다. 모든 작성자의 식별 정보가 없어 완전한 저자 분리나 의미상 유사 문서 제거까지 보장하지 않는다.
+Sources:
 
-Ko-Detect의 원래 test-v2는 학습·선택·보정에 넣지 않았다. 그중 이미 학습 등에 쓰인 주제와 겹치는 표본은 `transfer_test`로 따로 보고한다. 이 전이 평가를 완전히 새로운 주제의 평가라고 부르지 않는다.
+- [KatFishNet repository](https://github.com/Shinwoo-Park/katfishnet), revision `5e3dc89cc31a029be38fb2d871476b0aff7b793c`: Korean essays, abstracts, poetry, and generated counterparts. The [ACL 2025 paper](https://aclanthology.org/2025.acl-long.1030/) describes the original research; the metrics below belong to this separate model.
+- [Detect_AI_Generated_Korean_Text](https://github.com/gygUnig/Detect_AI_Generated_Korean_Text), revision `b822d8e807298797d45003cc4171f554811cb01c`: train/validation files and test-v2 outputs from several generators. Upstream performance claims are not inherited by this model.
+- [scikit-learn calibration documentation](https://scikit-learn.org/stable/modules/calibration.html): calibration methods and evaluation. Calibration does not necessarily increase accuracy.
 
-## 실제 측정 결과 — 2026-10-03
+Of 12,894 source rows, 50 normalized exact duplicates were removed, leaving 12,844. Each document remains intact. Grouping connects essay topics, abstract titles, source-poem groups, and identical text across datasets. Splits contain 6,621 training, 1,718 selection, 1,907 calibration, 1,846 topic-disjoint final-test, and 752 transfer-test documents. The four primary splits have disjoint groups. Incomplete author identifiers prevent a guarantee of full author separation or removal of semantically similar documents.
 
-임계값은 AI 추정 확률 ≥ 0.5다. 아래 **정확도는 공개 평가 자료에서 맞힌 비율이며 개별 사용자 글의 확률이 아니다**.
+Ko-Detect's original test-v2 was never used for training, selection, or calibration. Samples sharing topics with fitting stages are reported separately as `transfer_test`; they are not a wholly new-topic test.
 
-| 최종 평가 범위 | 문서 수 | 정확도 | 사람 글을 AI로 오탐 | AI 재현율 |
+## Measured results — 2026-10-03
+
+The classification threshold is estimated AI probability ≥ 0.5. **Accuracy is the proportion of correct labels on this public evaluation data, not a user's document probability.**
+
+| Final-test subset | Documents | Accuracy | Human false-positive rate | AI recall |
 | --- | ---: | ---: | ---: | ---: |
-| 전체: 에세이 비중 92.85% | 1,846 | 97.51% (1,800/1,846) | 0.90% (8/885) | 96.05% |
-| 에세이 | 1,714 | 98.19% | 0.70% (6/856) | 97.09% |
-| 논문 초록 | 37 | 91.89% | 10.00% (1/10) | 92.59% |
-| 시 | 95 | 87.37% | 5.26% (1/19) | 85.53% |
+| Overall; 92.85% essays | 1,846 | 97.51% (1,800/1,846) | 0.90% (8/885) | 96.05% |
+| Essays | 1,714 | 98.19% | 0.70% (6/856) | 97.09% |
+| Abstracts | 37 | 91.89% | 10.00% (1/10) | 92.59% |
+| Poetry | 95 | 87.37% | 5.26% (1/19) | 85.53% |
 
-전체 AUROC=0.99835, Brier=0.01849, ECE(10 bins)=0.01704. 주제/원본 그룹 34개를 단위로 300회 bootstrap한 정확도의 95% percentile 구간은 **95.75~98.64%**, FPR 구간은 **0.54~2.32%**다. 새로운 장르의 성능 구간이 아니다. 초록과 시의 인간 표본이 각각 10개, 19개로 작으므로 해당 오탐률은 매우 불안정하다.
+Overall AUROC=0.99835, Brier=0.01849, and ECE (10 bins)=0.01704. A 300-replicate bootstrap over 34 topic/source groups gives a 95% percentile accuracy interval of **95.75–98.64%** and an FPR interval of **0.54–2.32%**. These are not performance intervals for new genres. The human abstract and poetry subsets contain only 10 and 19 documents, so their FPRs are unstable.
 
-보정 전후: 전체 Brier 0.01864→0.01849, 장르·클래스 균형 Brier 0.05500→0.05065, ECE 0.03648→0.01704로 개선됐다. **분류 정확도는 97.72%→97.51%로 조금 낮아졌다.** 보정이 정확도를 높였다고 주장하지 않는다. ECE 한 수치가 모든 확률 구간·모든 장르의 보정 완성을 증명하지도 않는다.
+Calibration changed overall Brier from 0.01864 to 0.01849, genre/class-balanced Brier from 0.05500 to 0.05065, and ECE from 0.03648 to 0.01704. **Accuracy decreased slightly from 97.72% to 97.51%.** Do not claim calibration improved accuracy. One ECE value does not prove adequate calibration across all probability ranges and genres.
 
-별도 전이 평가 752개는 정확도 97.21%, FPR 0.27% (1/376), AI 재현율 94.68%다. 이 자료는 학습 단계와 주제를 공유하며 모두 에세이다. Python 표준 라이브러리 추론과 학습 파이프라인 결과의 차이는 각 평가 집합 첫 25개에서 최대 4.45e-16 이하였다.
+The separate 752-document transfer test achieved 97.21% accuracy, 0.27% FPR (1/376), and 94.68% AI recall. All samples are essays and share topics with fitting stages. Standard-library inference differed from the training pipeline by at most 4.45e-16 on the first 25 documents of each evaluation set.
 
-**GPTZero와의 한국어 동일 표본 비교는 하지 않았다.** 위 97.51%를 기존 영어 pilot의 GPTZero 97.22%와 비교해 더 우수하다고 말하면 안 된다. 언어·표본·목표가 다르다. 현재 한국어 수치는 내부 구현의 공개 자료 holdout 평가이며 독립 기관의 제품 검증이 아니다.
+**No matched Korean GPTZero comparison was performed.** Comparing this 97.51% with the English pilot's GPTZero 97.22% would confound languages, samples, and targets. These are public-data holdout results for this implementation, not external institutional product certification.
 
-## 재현과 파일
+## Reproduction and artifacts
 
-추론에는 별도 설치가 필요 없다. 재학습에는 numpy/scipy/scikit-learn/threadpoolctl이 필요하며 원 실행은 Python 3.13 / scikit-learn 1.9.0이었다. 자료를 받는 명령과 학습 명령은 분리되어 있다. 데이터 다운로더는 공개 고정 revision만 받고 사용자 글은 보내지 않는다.
+Inference needs no additional packages. Retraining requires numpy, scipy, scikit-learn, and threadpoolctl; the original run used Python 3.13 and scikit-learn 1.9.0. Download and training are separate commands. The downloader retrieves pinned public revisions without sending user text.
 
 ```text
 python scripts/prepare_korean_data.py work/korean-data
 python scripts/train_korean.py --data-root work/korean-data --output-dir work/korean-retrained
 ```
 
-원문 데이터셋은 패키지에 재배포하지 않는다. 공개 접근 가능하다는 사실만으로 무제한 재배포·상업 이용 권리가 보장되지는 않는다. 원 자료의 이용 조건을 따르며 재사용 권한을 새로 부여한다고 주장하지 않는다.
+Raw datasets are not redistributed. Public access does not establish unrestricted redistribution or commercial-use rights. Follow applicable source terms; this project does not grant new third-party permissions.
 
-- [실행 결과 전체](korean-validation.json): 원본 해시, 후보 선택값, 보정, 장르·생성기별 지표.
-- [표본별 평가 예측](korean-test-predictions.jsonl): 라벨·점수·문서 해시. 원문 없음.
-- [분할 기록](korean-split-manifest.jsonl): 학습/선택/보정/평가 그룹과 문서 해시.
-- [원 자료 URL·revision·해시](korean-source-manifest.json).
+- [Full run results](korean-validation.json): source hashes, candidate selection, calibration, and genre/generator metrics.
+- [Per-document predictions](korean-test-predictions.jsonl): labels, scores, and hashes without original text.
+- [Split manifest](korean-split-manifest.jsonl): training/selection/calibration/evaluation groups and document hashes.
+- [Source URLs, revisions, and hashes](korean-source-manifest.json).
 
-범용 현재 성능, 사람과 AI의 공동 작성, humanizer·번역·적대적 편집, 새로운 생성 모델은 충분히 검증되지 않았다. 더 정확한 수치를 보장하려면 해당 사용 환경에서 이력이 확인된 새 표본과 별도의 재보정·평가가 필요하다. 이 모델이 지원하는 것은 근거가 기록된 **한국어 추정 확률**이다.
+General current performance, human–AI collaboration, humanizers, translation, adversarial editing, and new generators remain insufficiently validated. Stronger deployment claims require new provenance-confirmed samples, separate recalibration, and evaluation in the intended environment. This model supplies documented **Korean class-probability estimates**.

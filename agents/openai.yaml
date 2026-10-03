@@ -1,6 +1,6 @@
 interface:
   display_name: "Bilingual AI Detector"
-  short_description: "무료 로컬 모델로 한국어·영어 추정 확률과 글 전체의 구체적 근거를 분석합니다"
+  short_description: "Offline Korean/English AI estimates with exact passage evidence"
   default_prompt: "Use $bilingual-ai-detector to run the applicable offline Korean or English model and report estimated authorship percentages with exact passage evidence, alternative explanations, and calibration limits, without paid detector APIs."
 policy:
   allow_implicit_invocation: true

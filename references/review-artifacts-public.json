@@ -1,17 +1,20 @@
 {
   "schema_version": 1,
   "review_date": "2026-10-03",
-  "scope": "Public review deliverables only; paths are relative to the directory where these four files are copied. This manifest excludes itself.",
+  "documentation_version": "3.1.1",
+  "scope": "Hashes of the current English review documentation. Paths are relative to this directory. This manifest excludes itself. These hashes do not replace the historical reviewed-source manifest or establish a new independent review.",
+  "original_review_commit": "54b50bb4c5c08f570c61b9b504b86bc7bc2ad609",
+  "original_artifact_manifest_url": "https://github.com/ChihyunAhn0309/bilingual-ai-detector/blob/54b50bb4c5c08f570c61b9b504b86bc7bc2ad609/references/review-artifacts-public.json",
   "files": [
     {
       "path": "review-public.md",
-      "sha256": "c4e95c7066654989dd30cc8541809bc3de5407c695c2cc5bc4cbad52caa1b12b",
-      "bytes": 6991
+      "sha256": "62d1e32f4a5037512f4f0fd755d8941948f8d7575a9fec3f139b239093d9b7d1",
+      "bytes": 7898
     },
     {
       "path": "review-public.json",
-      "sha256": "ed1bd42929c85eba77316cfeea174760e45da88101be0753971c4d17d04ac5cf",
-      "bytes": 11492
+      "sha256": "58c34204591a67a81e221b716914a0ca65a58beb733ea0f3645559b92025fda7",
+      "bytes": 11984
     },
     {
       "path": "reviewed-files-public.json",

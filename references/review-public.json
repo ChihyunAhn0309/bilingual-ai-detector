@@ -11,43 +11,43 @@
     {
       "id": "R1",
       "severity": "P1",
-      "title": "영어 HTML에서 실험용·미보정·오탐 한계가 사라짐",
+      "title": "English HTML lost experimental, uncalibrated, and false-positive limitations",
       "status": "fixed_and_retested"
     },
     {
       "id": "R2",
       "severity": "P2",
-      "title": "번들 한국어 가중치 권리 범위 미확인 — 배포 금지의 증거는 아님",
+      "title": "Rights scope of bundled Korean weights not independently cleared; no publication prohibition established",
       "status": "disclosed_but_not_independently_cleared"
     },
     {
       "id": "R3",
       "severity": "P2",
-      "title": "영어 실측 결과의 UTC 측정 시각 누락",
+      "title": "UTC measurement timestamp missing from English inference results",
       "status": "fixed_and_retested"
     },
     {
       "id": "R4",
       "severity": "P2",
-      "title": "명백한 비영어 입력도 --language en이면 점수 산출",
+      "title": "Clearly non-English input accepted when declared as English",
       "status": "fixed_for_non_latin_input_and_retested"
     },
     {
       "id": "R5",
       "severity": "P2",
-      "title": "패키지 전체 재사용 라이선스 미선택",
+      "title": "No project-wide reuse license selected",
       "status": "scope_disclosed_no_oss_claim"
     },
     {
       "id": "R6",
       "severity": "P2",
-      "title": "영어 모델 초기화 중 간헐적 torch_cpu.dll native crash",
+      "title": "Intermittent torch_cpu.dll native crash during English model initialization",
       "status": "root_cause_unresolved; supervised failure/worker-lock mitigation verified"
     },
     {
       "id": "R7",
       "severity": "P2",
-      "title": "같은 해시의 불완전·잘못된 확률 결과를 성공으로 저장",
+      "title": "Incomplete or invalid probability output accepted when the input hash matched",
       "status": "fixed_and_retested",
       "locations": [
         {
@@ -63,7 +63,7 @@
     {
       "id": "R8",
       "severity": "P2",
-      "title": "부모 강제 종료 후 자식이 살아 있는데 잠금이 풀림",
+      "title": "Lock released after forced supervisor termination while its worker remained alive",
       "status": "fixed_and_retested",
       "locations": [
         {
@@ -346,5 +346,12 @@
     "Network guard applied to both Python parent and worker processes.",
     "A valid-looking forged result is not cryptographically authenticated by schema checks.",
     "Only CLI workers using the same temporary lock directory are serialized; direct library calls are not."
-  ]
+  ],
+  "documentation_translation": {
+    "language": "en",
+    "documentation_version": "3.1.1",
+    "original_review_commit": "54b50bb4c5c08f570c61b9b504b86bc7bc2ad609",
+    "original_report_sha256": "ed1bd42929c85eba77316cfeea174760e45da88101be0753971c4d17d04ac5cf",
+    "scope": "English translation of finding titles; findings, statuses, metrics, and execution evidence are unchanged. This is not a new independent review."
+  }
 }
